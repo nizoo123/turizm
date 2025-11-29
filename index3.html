@@ -1,0 +1,2384 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dağ Turizmi | Azərbaycan</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-icon">⛰️</span>
+            <span class="logo-text">DağTur</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home" data-lang-key="nav_home">Ana Səhifə</a></li>
+            <li><a href="#map" data-lang-key="nav_map">Xəritə</a></li>
+            <li><a href="#mountains" data-lang-key="nav_mountains">Dağlar</a></li>
+            <li><a href="#tours" data-lang-key="nav_tours">Turlar</a></li>
+            <li><a href="#hotels" data-lang-key="nav_hotels">Otellər</a></li>
+            <li><a href="#contact" data-lang-key="nav_contact">Əlaqə</a></li>
+        </ul>
+        
+        <!-- Search Bar -->
+        <div class="nav-search">
+            <button class="search-toggle" id="searchToggle" onclick="toggleSearch()">
+                <span>🔍</span>
+            </button>
+            <div class="search-box" id="searchBox">
+                <input type="text" id="searchInput" data-lang-placeholder="search_placeholder" placeholder="Dağ, tur, otel axtar..." onkeyup="handleSearch(event)">
+                <button onclick="performSearch()" class="search-btn">🔍</button>
+                <div class="search-results" id="searchResults"></div>
+            </div>
+        </div>
+        
+        <!-- Language Selector -->
+        <div class="lang-selector">
+            <button class="lang-btn" id="langBtn">
+                <span class="lang-flag">🇦🇿</span>
+                <span class="lang-code">AZ</span>
+                <span class="lang-arrow">▼</span>
+            </button>
+            <div class="lang-dropdown" id="langDropdown">
+                <button class="lang-option active" data-lang="az">
+                    <span class="lang-flag">🇦🇿</span>
+                    <span>Azərbaycan</span>
+                </button>
+                <button class="lang-option" data-lang="en">
+                    <span class="lang-flag">🇬🇧</span>
+                    <span>English</span>
+                </button>
+                <button class="lang-option" data-lang="ru">
+                    <span class="lang-flag">🇷🇺</span>
+                    <span>Русский</span>
+                </button>
+                <button class="lang-option" data-lang="tr">
+                    <span class="lang-flag">🇹🇷</span>
+                    <span>Türkçe</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="nav-auth">
+            <!-- Not logged in -->
+            <div class="auth-buttons" id="authButtons">
+                <a href="auth.html" class="nav-btn-outline">🔑 Giriş</a>
+                <a href="#tours" class="nav-btn">🎿 Tura Qoşul</a>
+            </div>
+            <!-- Logged in -->
+            <div class="user-menu" id="userMenu" style="display: none;">
+                <button class="user-btn" id="userBtn">
+                    <span class="user-avatar">👤</span>
+                    <span class="user-name" id="userName">İstifadəçi</span>
+                    <span class="user-arrow">▼</span>
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="profile.html" class="dropdown-item">👤 Profilim</a>
+                    <a href="#" class="dropdown-item">📋 Sifarişlərim</a>
+                    <a href="favorites.html" class="dropdown-item">❤️ Sevimlilər <span class="fav-count" id="favCount">0</span></a>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item logout" id="logoutBtn">🚪 Çıxış</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-background">
+            <div class="hero-img"></div>
+            <div class="hero-overlay"></div>
+            <div class="clouds-container">
+                <div class="cloud cloud-1"></div>
+                <div class="cloud cloud-2"></div>
+                <div class="cloud cloud-3"></div>
+                <div class="cloud cloud-4"></div>
+                <div class="cloud cloud-5"></div>
+            </div>
+        </div>
+        
+        <div class="hero-content">
+            <span class="hero-subtitle" data-lang-key="hero_subtitle">Azərbaycanın Zirvələrini Kəşf Et</span>
+            <h1 class="hero-title" data-lang-key="hero_title">Dağ Turizmi</h1>
+            <p class="hero-description" data-lang-key="hero_desc">
+                Qafqaz dağlarının əzəmətli zirvələrindən Talış dağlarının yaşıl yamaclarına qədər 
+                — Azərbaycanın ən gözəl dağ mənzərələrini bizimlə kəşf edin.
+            </p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">4466m</span>
+                    <span class="stat-label">Bazardüzü</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Marşrut</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">1000+</span>
+                    <span class="stat-label">Turist</span>
+                </div>
+            </div>
+            <div class="hero-buttons">
+                <a href="#map" class="btn btn-primary" data-lang-key="hero_btn_map">Xəritəyə Bax</a>
+                <a href="#mountains" class="btn btn-secondary" data-lang-key="hero_btn_mountains">Dağlar</a>
+            </div>
+        </div>
+        
+        <div class="scroll-down">
+            <span data-lang-key="scroll_down">Aşağı</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section id="map" class="map-section">
+        <!-- Background like Hero -->
+        <div class="map-bg">
+            <div class="map-img"></div>
+            <div class="map-overlay"></div>
+            <div class="map-clouds-container">
+                <div class="cloud cloud-m1"></div>
+                <div class="cloud cloud-m2"></div>
+                <div class="cloud cloud-m3"></div>
+                <div class="cloud cloud-m4"></div>
+                <div class="cloud cloud-m5"></div>
+            </div>
+        </div>
+        
+        <div class="section-header" style="position: relative; z-index: 2;">
+            <span class="section-tag" data-lang-key="map_tag">İnteraktiv Xəritə</span>
+            <h2 class="section-title" style="color: white; text-shadow: 2px 2px 10px rgba(0,0,0,0.3);" data-lang-key="map_title">Dağları Kəşf Et</h2>
+            <p class="section-desc" style="color: rgba(255,255,255,0.9);" data-lang-key="map_desc">Qırmızı nöqtələrə basaraq dağlar haqqında məlumat alın</p>
+        </div>
+        
+        <div class="map-wrapper" style="position: relative; z-index: 2;">
+            <div class="location-bar" id="locationBar">
+                <span class="loc-icon">📍</span>
+                <span class="loc-text" id="locText">Məkanınız axtarılır...</span>
+            </div>
+            
+            <!-- Map Controls -->
+            <div class="map-controls">
+                <button class="map-ctrl active" data-layer="satellite">🛰️ Peyk</button>
+                <button class="map-ctrl" data-layer="terrain">🏔️ Relyef</button>
+                <button class="map-ctrl" data-layer="hybrid">🗺️ Hibrid</button>
+            </div>
+            
+            <!-- Leaflet Map Container -->
+            <div class="map-box">
+                <div id="leafletMap"></div>
+            </div>
+            
+            <div class="map-legend">
+                <div class="legend-item">
+                    <span class="legend-dot red"></span>
+                    <span>Dağ zirvələri</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot purple"></span>
+                    <span>UNESCO</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot green"></span>
+                    <span>Milli Park</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-box">
+            <button class="modal-x" id="modalX">&times;</button>
+            <div class="modal-img" id="modalImg"></div>
+            <div class="modal-info">
+                <h2 id="modalName">Dağ</h2>
+                
+                <!-- Rating -->
+                <div class="modal-rating">
+                    <div class="stars" id="modalStars">★★★★★</div>
+                    <span class="rating-num" id="modalRating">4.5</span>
+                    <span class="review-count">(<span id="modalReviews">0</span> rəy)</span>
+                </div>
+                
+                <div class="modal-stats">
+                    <div class="m-stat">
+                        <span class="m-val" id="modalAlt">0m</span>
+                        <span class="m-label">Hündürlük</span>
+                    </div>
+                    <div class="m-stat">
+                        <span class="m-val" id="modalDist">--</span>
+                        <span class="m-label">Uzaqlıq</span>
+                    </div>
+                    <div class="m-stat">
+                        <span class="m-val" id="modalDiff">Orta</span>
+                        <span class="m-label">Çətinlik</span>
+                    </div>
+                </div>
+                <p class="modal-desc" id="modalDesc">Məlumat...</p>
+                <div class="modal-tags" id="modalTags"></div>
+                
+                <!-- Nearby Places -->
+                <div class="modal-places">
+                    <h4>🎯 Yaxınlıqdakı yerlər</h4>
+                    <div class="places-list" id="modalPlaces"></div>
+                </div>
+                
+                <div class="modal-btns">
+                    <a href="#" class="btn btn-primary" id="modalDetail">Ətraflı Məlumat</a>
+                    <button class="btn btn-directions" id="modalMap">📍 Yol Tarifi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" id="scrollTop">
+        <span>↑</span>
+    </button>
+
+    <!-- Mountains Section -->
+    <section id="mountains" class="mountains-section">
+        <div class="section-header">
+            <span class="section-tag" data-lang-key="mountains_tag">Əzəmətli Zirvələr</span>
+            <h2 class="section-title" data-lang-key="mountains_title">Azərbaycanın Dağları</h2>
+        </div>
+        
+        <div class="cards-grid">
+            <div class="card" data-mountain="bazarduzu">
+                <button class="fav-btn" onclick="toggleFav(event, 'bazarduzu')" title="Sevimlilərə əlavə et">♡</button>
+                <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070')" onclick="openModal('bazarduzu')"></div>
+                <div class="card-body" onclick="openModal('bazarduzu')">
+                    <h3>Bazardüzü</h3>
+                    <span class="card-alt">4466 m</span>
+                    <p>Azərbaycanın ən hündür zirvəsi</p>
+                    <div class="card-tags">
+                        <span>Alpinizm</span>
+                        <span>Çətin</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-mountain="shahdag">
+                <button class="fav-btn" onclick="toggleFav(event, 'shahdag')" title="Sevimlilərə əlavə et">♡</button>
+                <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1491002052546-bf38f186af56?q=80&w=2083')" onclick="openModal('shahdag')"></div>
+                <div class="card-body" onclick="openModal('shahdag')">
+                    <h3>Şahdağ</h3>
+                    <span class="card-alt">4243 m</span>
+                    <p>Qış idman kurortu</p>
+                    <div class="card-tags">
+                        <span>Xizək</span>
+                        <span>Kurort</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-mountain="tufandag">
+                <button class="fav-btn" onclick="toggleFav(event, 'tufandag')" title="Sevimlilərə əlavə et">♡</button>
+                <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=2076')" onclick="openModal('tufandag')"></div>
+                <div class="card-body" onclick="openModal('tufandag')">
+                    <h3>Tufandağ</h3>
+                    <span class="card-alt">4191 m</span>
+                    <p>Ailə kurortu, kanat yolu</p>
+                    <div class="card-tags">
+                        <span>Ailəvi</span>
+                        <span>Asan</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-mountain="babadag">
+                <button class="fav-btn" onclick="toggleFav(event, 'babadag')" title="Sevimlilərə əlavə et">♡</button>
+                <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070')" onclick="openModal('babadag')"></div>
+                <div class="card-body" onclick="openModal('babadag')">
+                    <h3>Babadağ</h3>
+                    <span class="card-alt">3629 m</span>
+                    <p>Müqəddəs ziyarətgah</p>
+                    <div class="card-tags">
+                        <span>Ziyarət</span>
+                        <span>Orta</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-mountain="xinaliq">
+                <button class="fav-btn" onclick="toggleFav(event, 'xinaliq')" title="Sevimlilərə əlavə et">♡</button>
+                <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070')" onclick="openModal('xinaliq')"></div>
+                <div class="card-body" onclick="openModal('xinaliq')">
+                    <h3>Xınalıq</h3>
+                    <span class="card-alt">2350 m</span>
+                    <p>Dünyanın ən qədim kəndi</p>
+                    <div class="card-tags">
+                        <span>Tarix</span>
+                        <span>Mədəniyyət</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-mountain="lahic">
+                <button class="fav-btn" onclick="toggleFav(event, 'lahic')" title="Sevimlilərə əlavə et">♡</button>
+                <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?q=80&w=2076')" onclick="openModal('lahic')"></div>
+                <div class="card-body" onclick="openModal('lahic')">
+                    <h3>Lahıc</h3>
+                    <span class="card-alt">1200 m</span>
+                    <p>Mis sənətkarlığı mərkəzi</p>
+                    <div class="card-tags">
+                        <span>Sənət</span>
+                        <span>UNESCO</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-mountain="kapaz">
+                <button class="fav-btn" onclick="toggleFav(event, 'kapaz')" title="Sevimlilərə əlavə et">♡</button>
+                <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=2070')" onclick="openModal('kapaz')"></div>
+                <div class="card-body" onclick="openModal('kapaz')">
+                    <h3>Kəpəz</h3>
+                    <span class="card-alt">3066 m</span>
+                    <p>Göygöl mənzərəsi</p>
+                    <div class="card-tags">
+                        <span>Göl</span>
+                        <span>Trekking</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-mountain="murovdag">
+                <button class="fav-btn" onclick="toggleFav(event, 'murovdag')" title="Sevimlilərə əlavə et">♡</button>
+                <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1464278533981-50106e6176b1?q=80&w=2074')" onclick="openModal('murovdag')"></div>
+                <div class="card-body" onclick="openModal('murovdag')">
+                    <h3>Murovdağ</h3>
+                    <span class="card-alt">3724 m</span>
+                    <p>Kiçik Qafqazın zirvəsi</p>
+                    <div class="card-tags">
+                        <span>Alpinizm</span>
+                        <span>Çətin</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-mountain="gobustan">
+                <button class="fav-btn" onclick="toggleFav(event, 'gobustan')" title="Sevimlilərə əlavə et">♡</button>
+                <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2074')" onclick="openModal('gobustan')"></div>
+                <div class="card-body" onclick="openModal('gobustan')">
+                    <h3>Qobustan</h3>
+                    <span class="card-alt">400 m</span>
+                    <p>UNESCO Dünya İrsi</p>
+                    <div class="card-tags">
+                        <span>Petroqlif</span>
+                        <span>Vulkan</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-mountain="talysh">
+                <button class="fav-btn" onclick="toggleFav(event, 'talysh')" title="Sevimlilərə əlavə et">♡</button>
+                <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=2070')" onclick="openModal('talysh')"></div>
+                <div class="card-body" onclick="openModal('talysh')">
+                    <h3>Talış Dağları</h3>
+                    <span class="card-alt">2477 m</span>
+                    <p>Hirkan meşələri</p>
+                    <div class="card-tags">
+                        <span>Meşə</span>
+                        <span>Ekoturizm</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-mountain="beshbarmag">
+                <button class="fav-btn" onclick="toggleFav(event, 'beshbarmag')" title="Sevimlilərə əlavə et">♡</button>
+                <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070')" onclick="openModal('beshbarmag')"></div>
+                <div class="card-body" onclick="openModal('beshbarmag')">
+                    <h3>Beşbarmaq</h3>
+                    <span class="card-alt">520 m</span>
+                    <p>İkonik ziyarətgah</p>
+                    <div class="card-tags">
+                        <span>Ziyarət</span>
+                        <span>Asan</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" data-mountain="mudafidag">
+                <button class="fav-btn" onclick="toggleFav(event, 'mudafidag')" title="Sevimlilərə əlavə et">♡</button>
+                <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070')" onclick="openModal('mudafidag')"></div>
+                <div class="card-body" onclick="openModal('mudafidag')">
+                    <h3>Müdafiə Dağı</h3>
+                    <span class="card-alt">3888 m</span>
+                    <p>İsmayıllı zirvəsi</p>
+                    <div class="card-tags">
+                        <span>Trekking</span>
+                        <span>Çətin</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tours Section -->
+    <section id="tours" class="tours-section">
+        <!-- Background like Hero -->
+        <div class="tours-bg">
+            <div class="tours-img"></div>
+            <div class="tours-overlay"></div>
+            <div class="tours-clouds-container">
+                <div class="cloud cloud-t1"></div>
+                <div class="cloud cloud-t2"></div>
+                <div class="cloud cloud-t3"></div>
+            </div>
+        </div>
+        
+        <div class="section-header light" style="position: relative; z-index: 2;">
+            <span class="section-tag" data-lang-key="tours_tag">Macəra Səni Gözləyir</span>
+            <h2 class="section-title" data-lang-key="tours_title">Populyar Turlar</h2>
+            <p class="section-desc" style="color: rgba(255,255,255,0.9);" data-lang-key="tours_desc">Həyatınızın macərasına qoşulun</p>
+        </div>
+        
+        <div class="tours-grid" style="position: relative; z-index: 2;">
+            <div class="tour-card featured" data-tour="bazarduzu" data-price="1200">
+                <div class="tour-badge">Ən Populyar</div>
+                <div class="tour-icon">🏔️</div>
+                <h3>Bazardüzü Ekspedisiyası</h3>
+                <p>7 günlük alpinizm turu</p>
+                <ul>
+                    <li>✓ Professional bələdçi</li>
+                    <li>✓ Avadanlıq</li>
+                    <li>✓ Qidalanma</li>
+                    <li>✓ Sığorta</li>
+                </ul>
+                <div class="tour-dates">
+                    <span>📅 Növbəti tur: 15 İyun 2025</span>
+                </div>
+                <div class="tour-foot">
+                    <span class="tour-price">₼1200</span>
+                    <button class="tour-btn" onclick="openTourBooking('bazarduzu', 'Bazardüzü Ekspedisiyası', 1200)">Qoşul</button>
+                </div>
+            </div>
+            
+            <div class="tour-card" data-tour="shahdag" data-price="450">
+                <div class="tour-icon">⛷️</div>
+                <h3>Şahdağ Qış Turu</h3>
+                <p>3 günlük xizək həyəcanı</p>
+                <ul>
+                    <li>✓ Lift bileti</li>
+                    <li>✓ 5★ Otel</li>
+                    <li>✓ Transfer</li>
+                    <li>✓ Instruktor</li>
+                </ul>
+                <div class="tour-dates">
+                    <span>📅 Hər həftə sonu</span>
+                </div>
+                <div class="tour-foot">
+                    <span class="tour-price">₼450</span>
+                    <button class="tour-btn" onclick="openTourBooking('shahdag', 'Şahdağ Qış Turu', 450)">Qoşul</button>
+                </div>
+            </div>
+            
+            <div class="tour-card" data-tour="xinaliq" data-price="350">
+                <div class="tour-icon">🥾</div>
+                <h3>Xınalıq Trekkinqi</h3>
+                <p>3 günlük kənd macərası</p>
+                <ul>
+                    <li>✓ Ev qonağı</li>
+                    <li>✓ Mədəni tur</li>
+                    <li>✓ Milli yemək</li>
+                    <li>✓ Fotoqraf</li>
+                </ul>
+                <div class="tour-dates">
+                    <span>📅 Hər ay 1-3</span>
+                </div>
+                <div class="tour-foot">
+                    <span class="tour-price">₼350</span>
+                    <button class="tour-btn" onclick="openTourBooking('xinaliq', 'Xınalıq Trekkinqi', 350)">Qoşul</button>
+                </div>
+            </div>
+            
+            <div class="tour-card" data-tour="gabala" data-price="280">
+                <div class="tour-icon">🌲</div>
+                <h3>Qəbələ Ailəvi Tur</h3>
+                <p>2 günlük ailə istirahəti</p>
+                <ul>
+                    <li>✓ Tufandağ bileti</li>
+                    <li>✓ 4★ Otel</li>
+                    <li>✓ Zipline</li>
+                    <li>✓ At gəzintisi</li>
+                </ul>
+                <div class="tour-dates">
+                    <span>📅 Hər gün mövcud</span>
+                </div>
+                <div class="tour-foot">
+                    <span class="tour-price">₼280</span>
+                    <button class="tour-btn" onclick="openTourBooking('gabala', 'Qəbələ Ailəvi Tur', 280)">Qoşul</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hotel Reservation Section -->
+    <section id="hotels" class="hotels-section">
+        <!-- Background -->
+        <div class="hotels-bg">
+            <div class="hotels-img"></div>
+            <div class="hotels-overlay"></div>
+            <div class="hotels-clouds-container">
+                <div class="cloud cloud-h1"></div>
+                <div class="cloud cloud-h2"></div>
+            </div>
+        </div>
+        
+        <div class="section-header" style="position: relative; z-index: 2;">
+            <span class="section-tag" data-lang-key="hotels_tag">Rahat İstirahət</span>
+            <h2 class="section-title" style="color: white; text-shadow: 2px 2px 10px rgba(0,0,0,0.3);" data-lang-key="hotels_title">Otellər & Rezervasiya</h2>
+            <p class="section-desc" style="color: rgba(255,255,255,0.9);" data-lang-key="hotels_desc">Dağ kurortlarında lüks qalma imkanları</p>
+        </div>
+        
+        <div class="hotels-grid" style="position: relative; z-index: 2;">
+            <div class="hotel-card" data-hotel="shahdag-resort">
+                <div class="hotel-img" style="background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070')">
+                    <div class="hotel-stars">★★★★★</div>
+                    <div class="hotel-badge">Premium</div>
+                </div>
+                <div class="hotel-body">
+                    <h3>Şahdağ Resort</h3>
+                    <p class="hotel-location">📍 Şahdağ, Qusar</p>
+                    <div class="hotel-amenities">
+                        <span>🏊 Hovuz</span>
+                        <span>🍽️ Restoran</span>
+                        <span>💆 SPA</span>
+                        <span>🎿 Ski-in</span>
+                    </div>
+                    <div class="hotel-price-row">
+                        <div class="hotel-price">
+                            <span class="price-from">₼250</span>
+                            <span class="price-night">/ gecə</span>
+                        </div>
+                        <button class="hotel-btn" onclick="openHotelBooking('shahdag-resort', 'Şahdağ Resort', 250, 5)">Rezerv Et</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hotel-card" data-hotel="tufandag-resort">
+                <div class="hotel-img" style="background-image: url('https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=2070')">
+                    <div class="hotel-stars">★★★★</div>
+                </div>
+                <div class="hotel-body">
+                    <h3>Tufandağ Mountain Resort</h3>
+                    <p class="hotel-location">📍 Qəbələ</p>
+                    <div class="hotel-amenities">
+                        <span>🚡 Kanat yolu</span>
+                        <span>🍽️ Restoran</span>
+                        <span>🏋️ Fitness</span>
+                    </div>
+                    <div class="hotel-price-row">
+                        <div class="hotel-price">
+                            <span class="price-from">₼180</span>
+                            <span class="price-night">/ gecə</span>
+                        </div>
+                        <button class="hotel-btn" onclick="openHotelBooking('tufandag-resort', 'Tufandağ Mountain Resort', 180, 4)">Rezerv Et</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hotel-card" data-hotel="quba-palace">
+                <div class="hotel-img" style="background-image: url('https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=2070')">
+                    <div class="hotel-stars">★★★★★</div>
+                    <div class="hotel-badge">Yeni</div>
+                </div>
+                <div class="hotel-body">
+                    <h3>Quba Palace Hotel</h3>
+                    <p class="hotel-location">📍 Quba</p>
+                    <div class="hotel-amenities">
+                        <span>🏊 Hovuz</span>
+                        <span>🍽️ 3 Restoran</span>
+                        <span>💆 SPA</span>
+                        <span>🎰 Kazino</span>
+                    </div>
+                    <div class="hotel-price-row">
+                        <div class="hotel-price">
+                            <span class="price-from">₼320</span>
+                            <span class="price-night">/ gecə</span>
+                        </div>
+                        <button class="hotel-btn" onclick="openHotelBooking('quba-palace', 'Quba Palace Hotel', 320, 5)">Rezerv Et</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hotel-card" data-hotel="xinaliq-guesthouse">
+                <div class="hotel-img" style="background-image: url('https://images.unsplash.com/photo-1587061949409-02df41d5e562?q=80&w=2070')">
+                    <div class="hotel-stars">★★★</div>
+                    <div class="hotel-badge">Avtentik</div>
+                </div>
+                <div class="hotel-body">
+                    <h3>Xınalıq Ev Qonağı</h3>
+                    <p class="hotel-location">📍 Xınalıq Kəndi</p>
+                    <div class="hotel-amenities">
+                        <span>🍽️ Milli yemək</span>
+                        <span>☕ Səhər yeməyi</span>
+                        <span>🏔️ Mənzərə</span>
+                    </div>
+                    <div class="hotel-price-row">
+                        <div class="hotel-price">
+                            <span class="price-from">₼80</span>
+                            <span class="price-night">/ gecə</span>
+                        </div>
+                        <button class="hotel-btn" onclick="openHotelBooking('xinaliq-guesthouse', 'Xınalıq Ev Qonağı', 80, 3)">Rezerv Et</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="contact-section">
+        <!-- Background -->
+        <div class="contact-bg">
+            <div class="contact-img"></div>
+            <div class="contact-overlay"></div>
+            <div class="contact-clouds-container">
+                <div class="cloud cloud-c1"></div>
+                <div class="cloud cloud-c2"></div>
+            </div>
+        </div>
+        
+        <div class="contact-container" style="position: relative; z-index: 2;">
+            <div class="contact-header">
+                <span class="section-tag" data-lang-key="contact_tag">Bizimlə Əlaqə</span>
+                <h2 class="section-title" style="color: white;" data-lang-key="contact_title">Sualınız Var?</h2>
+                <p style="color: rgba(255,255,255,0.9);" data-lang-key="contact_desc">7/24 sizin xidmətinizdəyik</p>
+            </div>
+            
+            <div class="contact-grid">
+                <div class="contact-info-cards">
+                    <div class="contact-card">
+                        <div class="contact-icon">📍</div>
+                        <h4>Ünvan</h4>
+                        <p>Bakı şəhəri, Nizami küçəsi 45</p>
+                        <a href="https://maps.google.com" target="_blank" class="contact-link">Xəritədə Bax →</a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">📞</div>
+                        <h4>Telefon</h4>
+                        <p>+994 12 345 67 89</p>
+                        <p>+994 50 123 45 67</p>
+                        <a href="tel:+994123456789" class="contact-link">Zəng Et →</a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">✉️</div>
+                        <h4>E-poçt</h4>
+                        <p>info@dagtur.az</p>
+                        <p>booking@dagtur.az</p>
+                        <a href="mailto:info@dagtur.az" class="contact-link">E-poçt Göndər →</a>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">🕐</div>
+                        <h4 data-lang-key="contact_hours">İş Saatları</h4>
+                        <p data-lang-key="contact_247">7/24 Açıqdır</p>
+                        <p data-lang-key="contact_always">Həmişə sizin xidmətinizdə</p>
+                        <span class="work-status open">● 7/24</span>
+                    </div>
+                </div>
+                
+                <form class="contact-form-new" onsubmit="submitContact(event)">
+                    <h3>Mesaj Göndər</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ad Soyad</label>
+                            <input type="text" id="contactName" placeholder="Adınız Soyadınız" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefon</label>
+                            <input type="tel" id="contactPhone" placeholder="+994 XX XXX XX XX" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>E-poçt</label>
+                        <input type="email" id="contactEmail" placeholder="email@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mövzu</label>
+                        <select id="contactSubject" required>
+                            <option value="">Mövzu seçin</option>
+                            <option value="tour">Tur haqqında sual</option>
+                            <option value="hotel">Otel rezervasiyası</option>
+                            <option value="group">Qrup turları</option>
+                            <option value="corporate">Korporativ turlar</option>
+                            <option value="other">Digər</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Mesajınız</label>
+                        <textarea id="contactMessage" placeholder="Sualınızı və ya mesajınızı yazın..." rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn-new">
+                        <span>Göndər</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                </form>
+            </div>
+            
+            <div class="social-links">
+                <a href="#" class="social-link" title="Instagram">📷</a>
+                <a href="#" class="social-link" title="Facebook">👤</a>
+                <a href="#" class="social-link" title="WhatsApp">💬</a>
+                <a href="#" class="social-link" title="YouTube">▶️</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Tour Booking Modal -->
+    <div class="booking-modal" id="tourModal">
+        <div class="booking-box">
+            <button class="booking-close" onclick="closeTourModal()">&times;</button>
+            <div class="booking-header">
+                <h2 id="tourModalTitle">Tura Qoşul</h2>
+                <p id="tourModalDesc">Rezervasiya formasını doldurun</p>
+            </div>
+            
+            <form class="booking-form" onsubmit="submitTourBooking(event)">
+                <input type="hidden" id="tourId">
+                <input type="hidden" id="tourPrice">
+                
+                <div class="booking-section">
+                    <h4>👤 Şəxsi Məlumatlar</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ad Soyad *</label>
+                            <input type="text" id="tourName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefon *</label>
+                            <input type="tel" id="tourPhone" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>E-poçt *</label>
+                        <input type="email" id="tourEmail" required>
+                    </div>
+                </div>
+                
+                <div class="booking-section">
+                    <h4>📅 Tur Detalları</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nəfər Sayı *</label>
+                            <select id="tourPeople" onchange="updateTourTotal()" required>
+                                <option value="1">1 nəfər</option>
+                                <option value="2">2 nəfər</option>
+                                <option value="3">3 nəfər</option>
+                                <option value="4">4 nəfər</option>
+                                <option value="5">5 nəfər</option>
+                                <option value="6">6+ nəfər (qrup)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tarix *</label>
+                            <input type="date" id="tourDate" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Qeydlər</label>
+                        <textarea id="tourNotes" rows="2" placeholder="Xüsusi istəklər..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="booking-section">
+                    <h4>💳 Ödəniş</h4>
+                    <div class="payment-options">
+                        <label class="payment-option">
+                            <input type="radio" name="tourPayment" value="card" checked onchange="togglePaymentForm('tour')">
+                            <span class="option-box">
+                                <span class="option-icon">💳</span>
+                                <span>Kart ilə</span>
+                            </span>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="tourPayment" value="cash" onchange="togglePaymentForm('tour')">
+                            <span class="option-box">
+                                <span class="option-icon">💵</span>
+                                <span>Nağd</span>
+                            </span>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="tourPayment" value="transfer" onchange="togglePaymentForm('tour')">
+                            <span class="option-box">
+                                <span class="option-icon">🏦</span>
+                                <span>Köçürmə</span>
+                            </span>
+                        </label>
+                    </div>
+                    
+                    <div class="card-form" id="tourCardForm">
+                        <div class="form-group">
+                            <label>Kart Nömrəsi</label>
+                            <input type="text" id="tourCardNumber" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatCardNumber(this)">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Bitmə Tarixi</label>
+                                <input type="text" id="tourCardExpiry" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
+                            </div>
+                            <div class="form-group">
+                                <label>CVV</label>
+                                <input type="text" id="tourCardCvv" placeholder="***" maxlength="3">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Kart Sahibi</label>
+                            <input type="text" id="tourCardName" placeholder="AD SOYAD" style="text-transform: uppercase;">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="booking-total">
+                    <div class="total-row">
+                        <span>Tur qiyməti:</span>
+                        <span id="tourBasePrice">₼0</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Nəfər sayı:</span>
+                        <span id="tourPeopleCount">x1</span>
+                    </div>
+                    <div class="total-row total-final">
+                        <span>Cəmi:</span>
+                        <span id="tourTotalPrice">₼0</span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="booking-submit">
+                    <span>Rezerv Et</span>
+                    <span class="submit-icon">✓</span>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Hotel Booking Modal -->
+    <div class="booking-modal" id="hotelModal">
+        <div class="booking-box">
+            <button class="booking-close" onclick="closeHotelModal()">&times;</button>
+            <div class="booking-header">
+                <h2 id="hotelModalTitle">Otel Rezervasiyası</h2>
+                <p id="hotelModalStars">★★★★★</p>
+            </div>
+            
+            <form class="booking-form" onsubmit="submitHotelBooking(event)">
+                <input type="hidden" id="hotelId">
+                <input type="hidden" id="hotelPrice">
+                
+                <div class="booking-section">
+                    <h4>👤 Qonaq Məlumatları</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ad Soyad *</label>
+                            <input type="text" id="hotelGuestName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefon *</label>
+                            <input type="tel" id="hotelGuestPhone" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>E-poçt *</label>
+                        <input type="email" id="hotelGuestEmail" required>
+                    </div>
+                </div>
+                
+                <div class="booking-section">
+                    <h4>🛏️ Otaq Seçimi</h4>
+                    <div class="room-options">
+                        <label class="room-option">
+                            <input type="radio" name="roomType" value="standard" data-multiplier="1" checked onchange="updateHotelTotal()">
+                            <span class="room-box">
+                                <span class="room-name">Standart</span>
+                                <span class="room-desc">1-2 nəfərlik, 25m²</span>
+                                <span class="room-price">x1</span>
+                            </span>
+                        </label>
+                        <label class="room-option">
+                            <input type="radio" name="roomType" value="deluxe" data-multiplier="1.5" onchange="updateHotelTotal()">
+                            <span class="room-box">
+                                <span class="room-name">Deluxe</span>
+                                <span class="room-desc">1-2 nəfərlik, 35m², mənzərə</span>
+                                <span class="room-price">x1.5</span>
+                            </span>
+                        </label>
+                        <label class="room-option">
+                            <input type="radio" name="roomType" value="suite" data-multiplier="2.5" onchange="updateHotelTotal()">
+                            <span class="room-box">
+                                <span class="room-name">Suite</span>
+                                <span class="room-desc">2-4 nəfərlik, 60m², balkon</span>
+                                <span class="room-price">x2.5</span>
+                            </span>
+                        </label>
+                        <label class="room-option">
+                            <input type="radio" name="roomType" value="family" data-multiplier="3" onchange="updateHotelTotal()">
+                            <span class="room-box">
+                                <span class="room-name">Ailə Otağı</span>
+                                <span class="room-desc">4-6 nəfərlik, 80m², 2 yataq</span>
+                                <span class="room-price">x3</span>
+                            </span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Giriş Tarixi *</label>
+                            <input type="date" id="hotelCheckin" onchange="updateHotelTotal()" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Çıxış Tarixi *</label>
+                            <input type="date" id="hotelCheckout" onchange="updateHotelTotal()" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Otaq Sayı *</label>
+                            <select id="hotelRoomCount" onchange="updateHotelTotal()" required>
+                                <option value="1">1 otaq</option>
+                                <option value="2">2 otaq</option>
+                                <option value="3">3 otaq</option>
+                                <option value="4">4 otaq</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Qonaq Sayı</label>
+                            <select id="hotelGuests">
+                                <option value="1">1 böyük</option>
+                                <option value="2">2 böyük</option>
+                                <option value="2+1">2 böyük + 1 uşaq</option>
+                                <option value="2+2">2 böyük + 2 uşaq</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="extras-section">
+                        <h5>Əlavələr</h5>
+                        <label class="extra-option">
+                            <input type="checkbox" name="extras" value="breakfast" data-price="25" onchange="updateHotelTotal()">
+                            <span>🍳 Səhər yeməyi (+₼25/gün)</span>
+                        </label>
+                        <label class="extra-option">
+                            <input type="checkbox" name="extras" value="spa" data-price="50" onchange="updateHotelTotal()">
+                            <span>💆 SPA paketi (+₼50)</span>
+                        </label>
+                        <label class="extra-option">
+                            <input type="checkbox" name="extras" value="transfer" data-price="80" onchange="updateHotelTotal()">
+                            <span>🚗 Hava limanı transferi (+₼80)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="booking-section">
+                    <h4>💳 Ödəniş</h4>
+                    <div class="payment-options">
+                        <label class="payment-option">
+                            <input type="radio" name="hotelPayment" value="card" checked onchange="togglePaymentForm('hotel')">
+                            <span class="option-box">
+                                <span class="option-icon">💳</span>
+                                <span>Kart ilə</span>
+                            </span>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="hotelPayment" value="hotel" onchange="togglePaymentForm('hotel')">
+                            <span class="option-box">
+                                <span class="option-icon">🏨</span>
+                                <span>Oteldə</span>
+                            </span>
+                        </label>
+                    </div>
+                    
+                    <div class="card-form" id="hotelCardForm">
+                        <div class="form-group">
+                            <label>Kart Nömrəsi</label>
+                            <input type="text" id="hotelCardNumber" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatCardNumber(this)">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Bitmə Tarixi</label>
+                                <input type="text" id="hotelCardExpiry" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
+                            </div>
+                            <div class="form-group">
+                                <label>CVV</label>
+                                <input type="text" id="hotelCardCvv" placeholder="***" maxlength="3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="booking-total">
+                    <div class="total-row">
+                        <span>Otaq qiyməti:</span>
+                        <span id="hotelBasePrice">₼0 x <span id="hotelNights">0</span> gecə</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Otaq tipi:</span>
+                        <span id="hotelRoomType">Standart</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Əlavələr:</span>
+                        <span id="hotelExtrasPrice">₼0</span>
+                    </div>
+                    <div class="total-row total-final">
+                        <span>Cəmi:</span>
+                        <span id="hotelTotalPrice">₼0</span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="booking-submit">
+                    <span>Rezerv Et</span>
+                    <span class="submit-icon">✓</span>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Success Toast -->
+    <div class="success-toast" id="successToast">
+        <span class="toast-icon">✓</span>
+        <span class="toast-text">Rezervasiya uğurla tamamlandı!</span>
+    </div>
+
+    <!-- AI Chatbot -->
+    <div class="ai-chatbot" id="aiChatbot">
+        <button class="chat-toggle" id="chatToggle" onclick="toggleChat()">
+            <span class="chat-icon">🤖</span>
+            <span class="chat-wave">👋</span>
+            <span class="chat-close">✕</span>
+            <span class="chat-badge" id="chatBadge">1</span>
+            <span class="chat-tooltip" data-lang-key="chat_tooltip">Kömək lazımdır?</span>
+        </button>
+        
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <div class="chat-avatar">🤖</div>
+                <div class="chat-title">
+                    <h4 data-lang-key="chat_title">DağTur AI Köməkçi</h4>
+                    <span class="chat-status">● <span data-lang-key="chat_online">Onlayn</span></span>
+                </div>
+                <button class="chat-minimize" onclick="toggleChat()">─</button>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message bot">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content" data-lang-key="chat_welcome">
+                        Salam! 👋 Mən DağTur AI köməkçisiyəm. Sizə dağlar, turlar və rezervasiyalar haqqında məlumat verə bilərəm. Necə kömək edə bilərəm?
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-suggestions" id="chatSuggestions">
+                <button onclick="sendSuggestion('Ən populyar turlar hansılardır?')" data-lang-key="chat_sug_tours">🏔️ Populyar turlar</button>
+                <button onclick="sendSuggestion('Şahdağ haqqında məlumat')" data-lang-key="chat_sug_shahdag">⛷️ Şahdağ</button>
+                <button onclick="sendSuggestion('Qiymətlər necədir?')" data-lang-key="chat_sug_prices">💰 Qiymətlər</button>
+                <button onclick="sendSuggestion('Rezervasiya necə edim?')" data-lang-key="chat_sug_reserve">📝 Rezervasiya</button>
+            </div>
+            
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" data-lang-placeholder="chat_placeholder" placeholder="Mesajınızı yazın..." onkeypress="handleChatKeypress(event)">
+                <button onclick="sendChatMessage()" class="chat-send">
+                    <span>➤</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <span class="logo-icon">⛰️</span>
+                <span class="logo-text">DağTur</span>
+                <p>Azərbaycanın dağlarını kəşf et. Unudulmaz macəralar üçün bizimlə əlaqə saxlayın.</p>
+                <div class="footer-social">
+                    <a href="#">📷</a>
+                    <a href="#">👤</a>
+                    <a href="#">💬</a>
+                    <a href="#">▶️</a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4>Keçidlər</h4>
+                <a href="#home">Ana Səhifə</a>
+                <a href="#map">Xəritə</a>
+                <a href="#mountains">Dağlar</a>
+                <a href="#tours">Turlar</a>
+                <a href="#hotels">Otellər</a>
+                <a href="#contact">Əlaqə</a>
+            </div>
+            <div class="footer-links">
+                <h4>Populyar Turlar</h4>
+                <a href="#" onclick="openTourBooking('bazarduzu', 'Bazardüzü Ekspedisiyası', 1200)">Bazardüzü Ekspedisiyası</a>
+                <a href="#" onclick="openTourBooking('shahdag', 'Şahdağ Qış Turu', 450)">Şahdağ Qış Turu</a>
+                <a href="#" onclick="openTourBooking('xinaliq', 'Xınalıq Trekkinqi', 350)">Xınalıq Trekkinqi</a>
+                <a href="#" onclick="openTourBooking('gabala', 'Qəbələ Ailəvi Tur', 280)">Qəbələ Ailəvi Tur</a>
+            </div>
+            <div class="footer-links">
+                <h4>Əlaqə</h4>
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 0.5rem;">📍 Bakı, Nizami küçəsi 45</p>
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 0.5rem;">📞 +994 12 345 67 89</p>
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 0.5rem;">✉️ info@dagtur.az</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 DağTur. Bütün hüquqlar qorunur.</p>
+        </div>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        const mountains = {
+            bazarduzu: {
+                name: 'Bazardüzü', alt: '4466 m', lat: 41.2208, lng: 47.8586, diff: 'Çətin',
+                desc: 'Azərbaycanın ən hündür zirvəsi. Böyük Qafqaz silsiləsində, Rusiya sərhədində yerləşir. Alpinistlər üçün ciddi sınaq.',
+                tags: ['Alpinizm', 'Ekspedisiya', 'Qar', 'Professional'],
+                img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070',
+                color: '#ef4444', rating: 4.8, reviews: 156,
+                places: ['Qusar Resort', 'Şahdağ Ski', 'Qəçrəş Şəlaləsi']
+            },
+            shahdag: {
+                name: 'Şahdağ', alt: '4243 m', lat: 41.2753, lng: 48.1361, diff: 'Orta',
+                desc: 'Azərbaycanın ən məşhur qış kurortu. Müasir xizək infrastrukturu, 5 ulduzlu otellər.',
+                tags: ['Xizək', 'Snowboard', 'Kurort', 'Kanat yolu'],
+                img: 'https://images.unsplash.com/photo-1491002052546-bf38f186af56?q=80&w=2083',
+                color: '#ef4444', rating: 4.9, reviews: 324,
+                places: ['Şahdağ Hotel', 'PIK Palace', 'Ski Center']
+            },
+            tufandag: {
+                name: 'Tufandağ', alt: '4191 m', lat: 41.0167, lng: 47.8667, diff: 'Asan',
+                desc: 'Qəbələdə yerləşən ailə kurortu. 3.5 km kanat yolu, zipline, at gəzintisi.',
+                tags: ['Ailəvi', 'Kanat yolu', 'Zipline', '4 mövsüm'],
+                img: 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=2076',
+                color: '#ef4444', rating: 4.7, reviews: 289,
+                places: ['Qəbələ Land', 'Nohur Gölü', 'Tufandağ Resort']
+            },
+            babadag: {
+                name: 'Babadağ', alt: '3629 m', lat: 41.0125, lng: 48.2039, diff: 'Orta',
+                desc: 'Müqəddəs ziyarətgah. Zirvədə qədim pir var. Yayda alp çəmənlikləri.',
+                tags: ['Ziyarət', 'Trekking', 'Mənzərə', 'Mənəvi'],
+                img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070',
+                color: '#ef4444', rating: 4.5, reviews: 198,
+                places: ['Babadağ Piri', 'Quba Şəhəri', 'Afurca Şəlaləsi']
+            },
+            gobustan: {
+                name: 'Qobustan', alt: '400 m', lat: 40.0853, lng: 49.3819, diff: 'Asan',
+                desc: 'UNESCO İrsi. 6000 illik qayaüstü rəsmlər, palçıq vulkanları.',
+                tags: ['UNESCO', 'Petroqlif', 'Vulkan', 'Muzey'],
+                img: 'https://images.unsplash.com/photo-1464278533981-50106e6176b1?q=80&w=2074',
+                color: '#8b5cf6', rating: 4.6, reviews: 412,
+                places: ['Qobustan Muzeyi', 'Palçıq Vulkanları', 'Qaya Rəsmləri']
+            },
+            talysh: {
+                name: 'Talış Dağları', alt: '2477 m', lat: 38.8833, lng: 48.5833, diff: 'Asan-Orta',
+                desc: 'Subtropik cənnət. Hirkan Milli Parkı, nadir flora-fauna.',
+                tags: ['Hirkan', 'Meşə', 'Ekoturizm', 'Şəlalə'],
+                img: 'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=2070',
+                color: '#22c55e', rating: 4.4, reviews: 167,
+                places: ['Hirkan Parkı', 'Lənkəran Çayı', 'İstisu Bulaqları']
+            },
+            xinaliq: {
+                name: 'Xınalıq', alt: '2350 m', lat: 41.1833, lng: 48.1333, diff: 'Orta',
+                desc: 'Dünyanın ən qədim yaşayış yerlərindən biri. 5000 illik tarix, unikal dil və mədəniyyət.',
+                tags: ['Kənd', 'Tarix', 'Mədəniyyət', 'Etnoqrafiya'],
+                img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070',
+                color: '#f59e0b', rating: 4.8, reviews: 234,
+                places: ['Xınalıq Kəndi', 'Qədim Məscid', 'Etnoqrafiya Muzeyi']
+            },
+            lahic: {
+                name: 'Lahıc', alt: '1200 m', lat: 40.8472, lng: 48.3861, diff: 'Asan',
+                desc: 'Mis sənətkarlığı ilə məşhur qədim kənd. UNESCO qeyri-maddi miras.',
+                tags: ['Sənətkarlıq', 'Mis', 'Tarix', 'Kənd'],
+                img: 'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?q=80&w=2076',
+                color: '#f59e0b', rating: 4.6, reviews: 278,
+                places: ['Mis Ustaxanası', 'Lahıc Hamamı', 'Qədim Küçələr']
+            },
+            mudafidag: {
+                name: 'Müdafiə Dağı', alt: '3888 m', lat: 40.9833, lng: 48.4833, diff: 'Çətin',
+                desc: 'İsmayıllı rayonunda yerləşən əzəmətli zirvə. Alpinizm və trekking üçün ideal.',
+                tags: ['Alpinizm', 'Trekking', 'Qış', 'Macəra'],
+                img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070',
+                color: '#ef4444', rating: 4.3, reviews: 89,
+                places: ['İsmayıllı Şəhəri', 'Basqal Kəndi', 'İvanovka']
+            },
+            kapaz: {
+                name: 'Kəpəz Dağı', alt: '3066 m', lat: 40.5167, lng: 46.3667, diff: 'Orta',
+                desc: 'Göygöl rayonunda yerləşir. Möhtəşəm göllər və meşələr ilə əhatə olunub.',
+                tags: ['Göl', 'Meşə', 'Trekking', 'Piknik'],
+                img: 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=2076',
+                color: '#14b8a6', rating: 4.7, reviews: 345,
+                places: ['Göygöl', 'Maralgöl', 'Kəpəz Parkı']
+            },
+            murovdag: {
+                name: 'Murovdağ', alt: '3724 m', lat: 40.4500, lng: 46.8833, diff: 'Çətin',
+                desc: 'Kiçik Qafqaz silsiləsinin ən hündür nöqtəsi. Qarlı zirvələr və alp çəmənlikləri.',
+                tags: ['Alpinizm', 'Qar', 'Silsilə', 'Ekspedisiya'],
+                img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070',
+                color: '#ef4444', rating: 4.5, reviews: 112,
+                places: ['Gədəbəy', 'Şəmkir Su Anbarı', 'Slavyanka']
+            },
+            beshbarmag: {
+                name: 'Beşbarmaq', alt: '520 m', lat: 40.9611, lng: 49.2333, diff: 'Asan',
+                desc: 'Xırdalan yaxınlığında yerləşən ikonik qaya. Ziyarət yeri və mənzərə nöqtəsi.',
+                tags: ['Ziyarət', 'Qaya', 'Mənzərə', 'Asan'],
+                img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070',
+                color: '#8b5cf6', rating: 4.4, reviews: 567,
+                places: ['Beşbarmaq Piri', 'Siyəzən', 'Xəzər Sahili']
+            }
+        };
+
+        let userLat = null, userLng = null;
+        let map, markers = {};
+        
+        // Tile Layers
+        const tileLayers = {
+            satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '© Esri'
+            }),
+            terrain: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenTopoMap'
+            }),
+            hybrid: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '© Esri'
+            })
+        };
+        
+        const labelsLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+            attribution: '© CARTO'
+        });
+
+        function initMap() {
+            // Azerbaijan center
+            map = L.map('leafletMap', {
+                center: [40.3, 47.7],
+                zoom: 7,
+                minZoom: 6,
+                maxZoom: 15,
+                zoomControl: true
+            });
+            
+            // Default satellite layer
+            tileLayers.satellite.addTo(map);
+            
+            // Add labels for hybrid
+            // labelsLayer.addTo(map);
+            
+            // Add mountain markers
+            Object.keys(mountains).forEach(key => {
+                const m = mountains[key];
+                const icon = L.divIcon({
+                    className: 'custom-marker',
+                    html: `
+                        <div class="marker-container" style="--color: ${m.color}">
+                            <div class="marker-pulse"></div>
+                            <div class="marker-dot"></div>
+                            <div class="marker-label">${m.name}</div>
+                        </div>
+                    `,
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 15]
+                });
+                
+                const marker = L.marker([m.lat, m.lng], { icon }).addTo(map);
+                marker.on('click', () => openModal(key));
+                markers[key] = marker;
+            });
+            
+            // Add user location marker if available
+            if (userLat && userLng) {
+                addUserMarker();
+            }
+        }
+        
+        function addUserMarker() {
+            const userIcon = L.divIcon({
+                className: 'user-marker',
+                html: `<div class="user-dot">📍</div>`,
+                iconSize: [40, 40],
+                iconAnchor: [20, 20]
+            });
+            L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
+        }
+        
+        // Map layer switching
+        document.querySelectorAll('.map-ctrl').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.map-ctrl').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const layer = btn.dataset.layer;
+                Object.values(tileLayers).forEach(l => map.removeLayer(l));
+                map.removeLayer(labelsLayer);
+                
+                tileLayers[layer].addTo(map);
+                if (layer === 'hybrid') {
+                    labelsLayer.addTo(map);
+                }
+            });
+        });
+
+        function calcDist(lat1, lng1, lat2, lng2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+            return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+        }
+
+        function updateDist() {
+            if (!userLat) return;
+            Object.keys(mountains).forEach(k => {
+                const m = mountains[k];
+                m.distance = calcDist(userLat, userLng, m.lat, m.lng);
+            });
+        }
+
+        function getLocation() {
+            const txt = document.getElementById('locText');
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(p => {
+                    userLat = p.coords.latitude;
+                    userLng = p.coords.longitude;
+                    txt.textContent = 'Məkanınız tapıldı';
+                    document.getElementById('locationBar').classList.add('found');
+                    updateDist();
+                    if (map) addUserMarker();
+                }, () => {
+                    userLat = 40.4093; userLng = 49.8671;
+                    txt.textContent = 'Bakıdan uzaqlıq';
+                    updateDist();
+                });
+            } else {
+                userLat = 40.4093; userLng = 49.8671;
+                txt.textContent = 'Bakıdan uzaqlıq';
+                updateDist();
+            }
+        }
+
+        const modal = document.getElementById('modal');
+        
+        function openModal(key) {
+            const m = mountains[key];
+            if (!m) return;
+            document.getElementById('modalName').textContent = m.name;
+            document.getElementById('modalAlt').textContent = m.alt;
+            document.getElementById('modalDist').textContent = m.distance ? m.distance + ' km' : '--';
+            document.getElementById('modalDiff').textContent = m.diff;
+            document.getElementById('modalDesc').textContent = m.desc;
+            document.getElementById('modalImg').style.backgroundImage = `url('${m.img}')`;
+            document.getElementById('modalTags').innerHTML = m.tags.map(t => `<span class="m-tag">${t}</span>`).join('');
+            document.getElementById('modalDetail').href = `mountain-detail.html?mountain=${key}`;
+            document.getElementById('modalMap').onclick = () => window.open(`https://www.google.com/maps/dir/?api=1&destination=${m.lat},${m.lng}`, '_blank');
+            
+            // Rating
+            document.getElementById('modalRating').textContent = m.rating || '4.5';
+            document.getElementById('modalReviews').textContent = m.reviews || '0';
+            const starsEl = document.getElementById('modalStars');
+            const rating = m.rating || 4.5;
+            starsEl.innerHTML = '★'.repeat(Math.floor(rating)) + (rating % 1 >= 0.5 ? '½' : '') + '☆'.repeat(5 - Math.ceil(rating));
+            
+            // Places
+            const placesEl = document.getElementById('modalPlaces');
+            placesEl.innerHTML = (m.places || []).map(p => `<span class="place-tag">📍 ${p}</span>`).join('');
+            
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('modalX').onclick = closeModal;
+        modal.onclick = e => { if (e.target === modal) closeModal(); };
+        document.onkeydown = e => { if (e.key === 'Escape') closeModal(); };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            getLocation();
+            initMap();
+            checkAuth();
+            initScrollFeatures();
+        });
+
+        // Scroll features
+        function initScrollFeatures() {
+            const scrollTopBtn = document.getElementById('scrollTop');
+            const scrollDownBtn = document.querySelector('.scroll-down');
+            
+            // Scroll to top button visibility
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 500) {
+                    scrollTopBtn.classList.add('visible');
+                } else {
+                    scrollTopBtn.classList.remove('visible');
+                }
+            });
+            
+            // Scroll to top click
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            
+            // Hero scroll down - one page
+            if (scrollDownBtn) {
+                scrollDownBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+                });
+            }
+        }
+
+        // Auth functions
+        function checkAuth() {
+            const user = JSON.parse(localStorage.getItem('dagtur_current_user') || 'null');
+            const authButtons = document.getElementById('authButtons');
+            const userMenu = document.getElementById('userMenu');
+            const userName = document.getElementById('userName');
+
+            if (user) {
+                authButtons.style.display = 'none';
+                userMenu.style.display = 'block';
+                userName.textContent = user.name;
+            } else {
+                authButtons.style.display = 'flex';
+                userMenu.style.display = 'none';
+            }
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('dagtur_current_user');
+            checkAuth();
+            showLogoutMessage();
+        });
+
+        function showLogoutMessage() {
+            const toast = document.createElement('div');
+            toast.className = 'logout-toast';
+            toast.innerHTML = '✓ Uğurla çıxış etdiniz';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        // User dropdown toggle on click
+        document.getElementById('userBtn')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('userDropdown').classList.toggle('show');
+        });
+        document.addEventListener('click', () => {
+            document.getElementById('userDropdown')?.classList.remove('show');
+        });
+
+        // ==================== FAVORITES ====================
+        const Favorites = {
+            get: () => JSON.parse(localStorage.getItem('dagtur_favorites') || '[]'),
+            save: (favs) => localStorage.setItem('dagtur_favorites', JSON.stringify(favs)),
+            has: (id) => Favorites.get().includes(id),
+            add: (id) => { const f = Favorites.get(); if (!f.includes(id)) { f.push(id); Favorites.save(f); } },
+            remove: (id) => { Favorites.save(Favorites.get().filter(x => x !== id)); },
+            toggle: (id) => { Favorites.has(id) ? Favorites.remove(id) : Favorites.add(id); }
+        };
+
+        function toggleFav(event, mountainId) {
+            event.stopPropagation();
+            
+            // Check if user is logged in
+            const user = JSON.parse(localStorage.getItem('dagtur_current_user') || 'null');
+            if (!user) {
+                showLoginRequiredToast();
+                return;
+            }
+            
+            Favorites.toggle(mountainId);
+            updateFavButtons();
+            updateFavCount();
+            showFavToast(Favorites.has(mountainId));
+        }
+        
+        function showLoginRequiredToast() {
+            const t = translations[currentLang];
+            const existing = document.querySelector('.login-required-toast');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'login-required-toast';
+            toast.innerHTML = `🔒 ${t.fav_login_required} <a href="auth.html">Giriş</a>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function updateFavButtons() {
+            document.querySelectorAll('.card').forEach(card => {
+                const id = card.dataset.mountain;
+                const btn = card.querySelector('.fav-btn');
+                if (btn && id) {
+                    if (Favorites.has(id)) {
+                        btn.classList.add('active');
+                        btn.innerHTML = '♥';
+                    } else {
+                        btn.classList.remove('active');
+                        btn.innerHTML = '♡';
+                    }
+                }
+            });
+        }
+
+        function updateFavCount() {
+            const countEl = document.getElementById('favCount');
+            if (countEl) {
+                const count = Favorites.get().length;
+                countEl.textContent = count;
+                countEl.style.display = count > 0 ? 'inline' : 'none';
+            }
+        }
+
+        function showFavToast(added) {
+            const existing = document.querySelector('.fav-toast');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'fav-toast';
+            toast.innerHTML = added ? '❤️ Sevimlilərə əlavə edildi' : '💔 Sevimlilərdən çıxarıldı';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        // Init favorites on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateFavButtons();
+            updateFavCount();
+        });
+
+        // ==================== TOUR BOOKING ====================
+        let currentTourPrice = 0;
+        
+        function openTourBooking(tourId, tourName, price) {
+            document.getElementById('tourId').value = tourId;
+            document.getElementById('tourPrice').value = price;
+            document.getElementById('tourModalTitle').textContent = tourName;
+            currentTourPrice = price;
+            
+            // Set min date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tourDate').min = today;
+            
+            // Auto-fill if logged in
+            const user = JSON.parse(localStorage.getItem('dagtur_current_user') || 'null');
+            if (user) {
+                document.getElementById('tourName').value = user.name || '';
+                document.getElementById('tourEmail').value = user.email || '';
+            }
+            
+            updateTourTotal();
+            document.getElementById('tourModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeTourModal() {
+            document.getElementById('tourModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        
+        function updateTourTotal() {
+            const people = parseInt(document.getElementById('tourPeople').value) || 1;
+            const total = currentTourPrice * people;
+            
+            document.getElementById('tourBasePrice').textContent = '₼' + currentTourPrice;
+            document.getElementById('tourPeopleCount').textContent = 'x' + people;
+            document.getElementById('tourTotalPrice').textContent = '₼' + total;
+        }
+        
+        function submitTourBooking(e) {
+            e.preventDefault();
+            
+            const booking = {
+                type: 'tour',
+                tourId: document.getElementById('tourId').value,
+                name: document.getElementById('tourName').value,
+                phone: document.getElementById('tourPhone').value,
+                email: document.getElementById('tourEmail').value,
+                people: document.getElementById('tourPeople').value,
+                date: document.getElementById('tourDate').value,
+                notes: document.getElementById('tourNotes').value,
+                payment: document.querySelector('input[name="tourPayment"]:checked').value,
+                total: document.getElementById('tourTotalPrice').textContent,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            const bookings = JSON.parse(localStorage.getItem('dagtur_bookings') || '[]');
+            bookings.push(booking);
+            localStorage.setItem('dagtur_bookings', JSON.stringify(bookings));
+            
+            closeTourModal();
+            showSuccessToast('Tur rezervasiyanız qəbul edildi!');
+        }
+        
+        // ==================== HOTEL BOOKING ====================
+        let currentHotelPrice = 0;
+        
+        function openHotelBooking(hotelId, hotelName, price, stars) {
+            document.getElementById('hotelId').value = hotelId;
+            document.getElementById('hotelPrice').value = price;
+            document.getElementById('hotelModalTitle').textContent = hotelName;
+            document.getElementById('hotelModalStars').textContent = '★'.repeat(stars);
+            currentHotelPrice = price;
+            
+            // Set min date to today
+            const today = new Date().toISOString().split('T')[0];
+            const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+            document.getElementById('hotelCheckin').min = today;
+            document.getElementById('hotelCheckin').value = today;
+            document.getElementById('hotelCheckout').min = tomorrow;
+            document.getElementById('hotelCheckout').value = tomorrow;
+            
+            // Auto-fill if logged in
+            const user = JSON.parse(localStorage.getItem('dagtur_current_user') || 'null');
+            if (user) {
+                document.getElementById('hotelGuestName').value = user.name || '';
+                document.getElementById('hotelGuestEmail').value = user.email || '';
+            }
+            
+            updateHotelTotal();
+            document.getElementById('hotelModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeHotelModal() {
+            document.getElementById('hotelModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        
+        function updateHotelTotal() {
+            const checkin = document.getElementById('hotelCheckin').value;
+            const checkout = document.getElementById('hotelCheckout').value;
+            const roomType = document.querySelector('input[name="roomType"]:checked');
+            const roomCount = parseInt(document.getElementById('hotelRoomCount').value) || 1;
+            
+            let nights = 1;
+            if (checkin && checkout) {
+                const diff = new Date(checkout) - new Date(checkin);
+                nights = Math.max(1, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+            }
+            
+            const multiplier = parseFloat(roomType?.dataset.multiplier || 1);
+            const roomNames = { standard: 'Standart', deluxe: 'Deluxe', suite: 'Suite', family: 'Ailə Otağı' };
+            
+            // Calculate extras
+            let extras = 0;
+            document.querySelectorAll('input[name="extras"]:checked').forEach(cb => {
+                const price = parseInt(cb.dataset.price) || 0;
+                if (cb.value === 'breakfast') {
+                    extras += price * nights;
+                } else {
+                    extras += price;
+                }
+            });
+            
+            const roomTotal = currentHotelPrice * multiplier * nights * roomCount;
+            const total = roomTotal + extras;
+            
+            document.getElementById('hotelNights').textContent = nights;
+            document.getElementById('hotelRoomType').textContent = roomNames[roomType?.value || 'standard'] + ' x' + roomCount;
+            document.getElementById('hotelExtrasPrice').textContent = '₼' + extras;
+            document.getElementById('hotelTotalPrice').textContent = '₼' + Math.round(total);
+        }
+        
+        function submitHotelBooking(e) {
+            e.preventDefault();
+            
+            const booking = {
+                type: 'hotel',
+                hotelId: document.getElementById('hotelId').value,
+                guestName: document.getElementById('hotelGuestName').value,
+                guestPhone: document.getElementById('hotelGuestPhone').value,
+                guestEmail: document.getElementById('hotelGuestEmail').value,
+                roomType: document.querySelector('input[name="roomType"]:checked').value,
+                roomCount: document.getElementById('hotelRoomCount').value,
+                checkin: document.getElementById('hotelCheckin').value,
+                checkout: document.getElementById('hotelCheckout').value,
+                guests: document.getElementById('hotelGuests').value,
+                payment: document.querySelector('input[name="hotelPayment"]:checked').value,
+                total: document.getElementById('hotelTotalPrice').textContent,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            const bookings = JSON.parse(localStorage.getItem('dagtur_bookings') || '[]');
+            bookings.push(booking);
+            localStorage.setItem('dagtur_bookings', JSON.stringify(bookings));
+            
+            closeHotelModal();
+            showSuccessToast('Otel rezervasiyanız qəbul edildi!');
+        }
+        
+        // ==================== PAYMENT HELPERS ====================
+        function togglePaymentForm(type) {
+            const formId = type === 'tour' ? 'tourCardForm' : 'hotelCardForm';
+            const paymentName = type === 'tour' ? 'tourPayment' : 'hotelPayment';
+            const selected = document.querySelector(`input[name="${paymentName}"]:checked`).value;
+            
+            document.getElementById(formId).style.display = selected === 'card' ? 'block' : 'none';
+        }
+        
+        function formatCardNumber(input) {
+            let value = input.value.replace(/\D/g, '');
+            value = value.replace(/(.{4})/g, '$1 ').trim();
+            input.value = value;
+        }
+        
+        function formatExpiry(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2);
+            }
+            input.value = value;
+        }
+        
+        // ==================== CONTACT FORM ====================
+        function submitContact(e) {
+            e.preventDefault();
+            
+            const contact = {
+                name: document.getElementById('contactName').value,
+                phone: document.getElementById('contactPhone').value,
+                email: document.getElementById('contactEmail').value,
+                subject: document.getElementById('contactSubject').value,
+                message: document.getElementById('contactMessage').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            const contacts = JSON.parse(localStorage.getItem('dagtur_contacts') || '[]');
+            contacts.push(contact);
+            localStorage.setItem('dagtur_contacts', JSON.stringify(contacts));
+            
+            // Reset form
+            e.target.reset();
+            showSuccessToast('Mesajınız göndərildi!');
+        }
+        
+        // ==================== TOAST ====================
+        function showSuccessToast(message) {
+            const toast = document.getElementById('successToast');
+            toast.querySelector('.toast-text').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Close modals on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeTourModal();
+                closeHotelModal();
+            }
+        });
+        
+        // Close modals on backdrop click
+        document.getElementById('tourModal')?.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('tourModal')) closeTourModal();
+        });
+        document.getElementById('hotelModal')?.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('hotelModal')) closeHotelModal();
+        });
+
+        // ==================== LANGUAGE SYSTEM ====================
+        const translations = {
+            az: {
+                // Navigation
+                nav_home: 'Ana Səhifə', nav_map: 'Xəritə', nav_mountains: 'Dağlar',
+                nav_tours: 'Turlar', nav_hotels: 'Otellər', nav_contact: 'Əlaqə',
+                // Hero
+                hero_subtitle: 'Azərbaycanın Zirvələrini Kəşf Et', hero_title: 'Dağ Turizmi',
+                hero_desc: 'Qafqaz dağlarının əzəmətli zirvələrindən Talış dağlarının yaşıl yamaclarına qədər — Azərbaycanın ən gözəl dağ mənzərələrini bizimlə kəşf edin.',
+                hero_btn_map: 'Xəritəyə Bax', hero_btn_mountains: 'Dağlar', scroll_down: 'Aşağı',
+                // Map
+                map_tag: 'İnteraktiv Xəritə', map_title: 'Dağları Kəşf Et',
+                map_desc: 'Qırmızı nöqtələrə basaraq dağlar haqqında məlumat alın',
+                // Mountains
+                mountains_tag: 'Əzəmətli Zirvələr', mountains_title: 'Azərbaycanın Dağları',
+                // Tours
+                tours_tag: 'Macəra Səni Gözləyir', tours_title: 'Populyar Turlar',
+                tours_desc: 'Həyatınızın macərasına qoşulun',
+                // Hotels
+                hotels_tag: 'Rahat İstirahət', hotels_title: 'Otellər & Rezervasiya',
+                hotels_desc: 'Dağ kurortlarında lüks qalma imkanları',
+                // Contact
+                contact_tag: 'Bizimlə Əlaqə', contact_title: 'Sualınız Var?',
+                contact_desc: '7/24 sizin xidmətinizdəyik',
+                contact_hours: 'İş Saatları', contact_247: '7/24 Açıqdır', contact_always: 'Həmişə sizin xidmətinizdə',
+                // Buttons
+                btn_join: 'Qoşul', btn_reserve: 'Rezerv Et', btn_send: 'Göndər',
+                // Search
+                search_placeholder: 'Dağ, tur, otel axtar...',
+                // Chat
+                chat_tooltip: 'Kömək lazımdır?', chat_title: 'DağTur AI Köməkçi', chat_online: 'Onlayn',
+                chat_welcome: 'Salam! 👋 Mən DağTur AI köməkçisiyəm. Sizə dağlar, turlar və rezervasiyalar haqqında məlumat verə bilərəm. Necə kömək edə bilərəm?',
+                chat_placeholder: 'Mesajınızı yazın...',
+                chat_sug_tours: '🏔️ Populyar turlar', chat_sug_shahdag: '⛷️ Şahdağ',
+                chat_sug_prices: '💰 Qiymətlər', chat_sug_reserve: '📝 Rezervasiya',
+                // Favorites
+                fav_login_required: 'Sevimlilərə əlavə etmək üçün giriş edin!'
+            },
+            en: {
+                nav_home: 'Home', nav_map: 'Map', nav_mountains: 'Mountains',
+                nav_tours: 'Tours', nav_hotels: 'Hotels', nav_contact: 'Contact',
+                hero_subtitle: 'Discover the Peaks of Azerbaijan', hero_title: 'Mountain Tourism',
+                hero_desc: 'From the majestic peaks of the Caucasus mountains to the green slopes of the Talysh mountains — discover the most beautiful mountain landscapes of Azerbaijan with us.',
+                hero_btn_map: 'View Map', hero_btn_mountains: 'Mountains', scroll_down: 'Down',
+                map_tag: 'Interactive Map', map_title: 'Discover Mountains',
+                map_desc: 'Click on red dots to get information about mountains',
+                mountains_tag: 'Majestic Peaks', mountains_title: 'Mountains of Azerbaijan',
+                tours_tag: 'Adventure Awaits You', tours_title: 'Popular Tours',
+                tours_desc: 'Join the adventure of your life',
+                hotels_tag: 'Comfortable Stay', hotels_title: 'Hotels & Reservations',
+                hotels_desc: 'Luxury accommodation in mountain resorts',
+                contact_tag: 'Contact Us', contact_title: 'Have Questions?',
+                contact_desc: 'We are at your service 24/7',
+                contact_hours: 'Working Hours', contact_247: 'Open 24/7', contact_always: 'Always at your service',
+                btn_join: 'Join', btn_reserve: 'Reserve', btn_send: 'Send',
+                search_placeholder: 'Search mountain, tour, hotel...',
+                chat_tooltip: 'Need help?', chat_title: 'DagTur AI Assistant', chat_online: 'Online',
+                chat_welcome: 'Hello! 👋 I am the DagTur AI assistant. I can help you with information about mountains, tours and reservations. How can I help you?',
+                chat_placeholder: 'Type your message...',
+                chat_sug_tours: '🏔️ Popular tours', chat_sug_shahdag: '⛷️ Shahdag',
+                chat_sug_prices: '💰 Prices', chat_sug_reserve: '📝 Reservation',
+                fav_login_required: 'Please login to add to favorites!'
+            },
+            ru: {
+                nav_home: 'Главная', nav_map: 'Карта', nav_mountains: 'Горы',
+                nav_tours: 'Туры', nav_hotels: 'Отели', nav_contact: 'Контакты',
+                hero_subtitle: 'Откройте Вершины Азербайджана', hero_title: 'Горный Туризм',
+                hero_desc: 'От величественных вершин Кавказских гор до зелёных склонов Талышских гор — откройте для себя самые красивые горные пейзажи Азербайджана вместе с нами.',
+                hero_btn_map: 'Смотреть Карту', hero_btn_mountains: 'Горы', scroll_down: 'Вниз',
+                map_tag: 'Интерактивная Карта', map_title: 'Откройте Горы',
+                map_desc: 'Нажмите на красные точки, чтобы получить информацию о горах',
+                mountains_tag: 'Величественные Вершины', mountains_title: 'Горы Азербайджана',
+                tours_tag: 'Приключение Ждёт Вас', tours_title: 'Популярные Туры',
+                tours_desc: 'Присоединяйтесь к приключению своей жизни',
+                hotels_tag: 'Комфортный Отдых', hotels_title: 'Отели и Бронирование',
+                hotels_desc: 'Роскошное проживание в горных курортах',
+                contact_tag: 'Свяжитесь с Нами', contact_title: 'Есть Вопросы?',
+                contact_desc: 'Мы к вашим услугам 24/7',
+                contact_hours: 'Часы Работы', contact_247: 'Открыто 24/7', contact_always: 'Всегда к вашим услугам',
+                btn_join: 'Присоединиться', btn_reserve: 'Забронировать', btn_send: 'Отправить',
+                search_placeholder: 'Поиск гор, туров, отелей...',
+                chat_tooltip: 'Нужна помощь?', chat_title: 'ДагТур AI Помощник', chat_online: 'Онлайн',
+                chat_welcome: 'Привет! 👋 Я AI-помощник DagTur. Могу помочь с информацией о горах, турах и бронировании. Чем могу помочь?',
+                chat_placeholder: 'Напишите сообщение...',
+                chat_sug_tours: '🏔️ Популярные туры', chat_sug_shahdag: '⛷️ Шахдаг',
+                chat_sug_prices: '💰 Цены', chat_sug_reserve: '📝 Бронирование',
+                fav_login_required: 'Войдите, чтобы добавить в избранное!'
+            },
+            tr: {
+                nav_home: 'Ana Sayfa', nav_map: 'Harita', nav_mountains: 'Dağlar',
+                nav_tours: 'Turlar', nav_hotels: 'Oteller', nav_contact: 'İletişim',
+                hero_subtitle: 'Azerbaycan\'ın Zirvelerini Keşfet', hero_title: 'Dağ Turizmi',
+                hero_desc: 'Kafkas dağlarının görkemli zirvelerinden Talış dağlarının yeşil yamaçlarına kadar — Azerbaycan\'ın en güzel dağ manzaralarını bizimle keşfedin.',
+                hero_btn_map: 'Haritaya Bak', hero_btn_mountains: 'Dağlar', scroll_down: 'Aşağı',
+                map_tag: 'İnteraktif Harita', map_title: 'Dağları Keşfet',
+                map_desc: 'Kırmızı noktalara tıklayarak dağlar hakkında bilgi alın',
+                mountains_tag: 'Görkemli Zirveler', mountains_title: 'Azerbaycan Dağları',
+                tours_tag: 'Macera Seni Bekliyor', tours_title: 'Popüler Turlar',
+                tours_desc: 'Hayatınızın macerasına katılın',
+                hotels_tag: 'Rahat Konaklama', hotels_title: 'Oteller & Rezervasyon',
+                hotels_desc: 'Dağ tatil köylerinde lüks konaklama',
+                contact_tag: 'Bize Ulaşın', contact_title: 'Sorunuz mu Var?',
+                contact_desc: '7/24 hizmetinizdeyiz',
+                contact_hours: 'Çalışma Saatleri', contact_247: '7/24 Açık', contact_always: 'Her zaman hizmetinizde',
+                btn_join: 'Katıl', btn_reserve: 'Rezerve Et', btn_send: 'Gönder',
+                search_placeholder: 'Dağ, tur, otel ara...',
+                chat_tooltip: 'Yardım lazım mı?', chat_title: 'DağTur AI Asistan', chat_online: 'Çevrimiçi',
+                chat_welcome: 'Merhaba! 👋 Ben DagTur AI asistanıyım. Dağlar, turlar ve rezervasyonlar hakkında bilgi verebilirim. Nasıl yardımcı olabilirim?',
+                chat_placeholder: 'Mesajınızı yazın...',
+                chat_sug_tours: '🏔️ Popüler turlar', chat_sug_shahdag: '⛷️ Şahdağ',
+                chat_sug_prices: '💰 Fiyatlar', chat_sug_reserve: '📝 Rezervasyon',
+                fav_login_required: 'Favorilere eklemek için giriş yapın!'
+            }
+        };
+
+        let currentLang = localStorage.getItem('dagtur_lang') || 'az';
+        const langFlags = { az: '🇦🇿', en: '🇬🇧', ru: '🇷🇺', tr: '🇹🇷' };
+        
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('dagtur_lang', lang);
+            const t = translations[lang];
+            
+            // Update all elements with data-lang-key
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
+                const key = el.dataset.langKey;
+                if (t[key]) el.textContent = t[key];
+            });
+            
+            // Update placeholders
+            document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
+                const key = el.dataset.langPlaceholder;
+                if (t[key]) el.placeholder = t[key];
+            });
+            
+            // Update lang button
+            document.querySelector('.lang-btn .lang-flag').textContent = langFlags[lang];
+            document.querySelector('.lang-btn .lang-code').textContent = lang.toUpperCase();
+            
+            // Update active state
+            document.querySelectorAll('.lang-option').forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.lang === lang);
+            });
+            
+            // Update document title
+            const titles = { az: 'Dağ Turizmi | Azərbaycan', en: 'Mountain Tourism | Azerbaijan', 
+                           ru: 'Горный Туризм | Азербайджан', tr: 'Dağ Turizmi | Azerbaycan' };
+            document.title = titles[lang];
+        }
+        
+        // Language dropdown toggle
+        document.getElementById('langBtn')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('langDropdown').classList.toggle('show');
+        });
+        
+        // Language selection
+        document.querySelectorAll('.lang-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setLanguage(btn.dataset.lang);
+                document.getElementById('langDropdown').classList.remove('show');
+            });
+        });
+        
+        // Close dropdown on outside click
+        document.addEventListener('click', () => {
+            document.getElementById('langDropdown')?.classList.remove('show');
+        });
+        
+        // Load saved language
+        setLanguage(currentLang);
+        
+        // ==================== SEARCH SYSTEM ====================
+        const searchData = [
+            { type: 'mountain', name: 'Bazardüzü', alt: '4466m', id: 'bazarduzu' },
+            { type: 'mountain', name: 'Şahdağ', alt: '4243m', id: 'shahdag' },
+            { type: 'mountain', name: 'Tufandağ', alt: '4191m', id: 'tufandag' },
+            { type: 'mountain', name: 'Babadağ', alt: '3629m', id: 'babadag' },
+            { type: 'mountain', name: 'Xınalıq', alt: '2350m', id: 'xinaliq' },
+            { type: 'mountain', name: 'Lahıc', alt: '1200m', id: 'lahic' },
+            { type: 'mountain', name: 'Kəpəz', alt: '3066m', id: 'kapaz' },
+            { type: 'mountain', name: 'Murovdağ', alt: '3724m', id: 'murovdag' },
+            { type: 'tour', name: 'Bazardüzü Ekspedisiyası', price: '₼1200', id: 'bazarduzu' },
+            { type: 'tour', name: 'Şahdağ Qış Turu', price: '₼450', id: 'shahdag' },
+            { type: 'tour', name: 'Xınalıq Trekkinqi', price: '₼350', id: 'xinaliq' },
+            { type: 'tour', name: 'Qəbələ Ailəvi Tur', price: '₼280', id: 'gabala' },
+            { type: 'hotel', name: 'Şahdağ Resort', stars: '★★★★★', id: 'shahdag-resort' },
+            { type: 'hotel', name: 'Tufandağ Mountain Resort', stars: '★★★★', id: 'tufandag-resort' },
+            { type: 'hotel', name: 'Quba Palace Hotel', stars: '★★★★★', id: 'quba-palace' }
+        ];
+        
+        function toggleSearch() {
+            const searchBox = document.getElementById('searchBox');
+            searchBox.classList.toggle('active');
+            if (searchBox.classList.contains('active')) {
+                document.getElementById('searchInput').focus();
+            }
+        }
+        
+        function handleSearch(e) {
+            const query = e.target.value.toLowerCase().trim();
+            const results = document.getElementById('searchResults');
+            
+            if (query.length < 2) {
+                results.innerHTML = '';
+                results.classList.remove('active');
+                return;
+            }
+            
+            const filtered = searchData.filter(item => 
+                item.name.toLowerCase().includes(query)
+            );
+            
+            if (filtered.length === 0) {
+                results.innerHTML = '<div class="search-no-result">Nəticə tapılmadı</div>';
+            } else {
+                results.innerHTML = filtered.map(item => {
+                    const icon = item.type === 'mountain' ? '🏔️' : item.type === 'tour' ? '🎿' : '🏨';
+                    const detail = item.alt || item.price || item.stars;
+                    return `<div class="search-item" onclick="goToResult('${item.type}', '${item.id}')">
+                        <span class="search-icon">${icon}</span>
+                        <span class="search-name">${item.name}</span>
+                        <span class="search-detail">${detail}</span>
+                    </div>`;
+                }).join('');
+            }
+            results.classList.add('active');
+        }
+        
+        function goToResult(type, id) {
+            document.getElementById('searchBox').classList.remove('active');
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').classList.remove('active');
+            
+            if (type === 'mountain') {
+                openModal(id);
+            } else if (type === 'tour') {
+                document.getElementById('tours').scrollIntoView({ behavior: 'smooth' });
+            } else if (type === 'hotel') {
+                document.getElementById('hotels').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        function performSearch() {
+            const query = document.getElementById('searchInput').value;
+            if (query.trim()) handleSearch({ target: { value: query } });
+        }
+        
+        // Close search on outside click
+        document.addEventListener('click', (e) => {
+            const searchBox = document.getElementById('searchBox');
+            const searchToggle = document.getElementById('searchToggle');
+            if (!searchBox?.contains(e.target) && !searchToggle?.contains(e.target)) {
+                searchBox?.classList.remove('active');
+            }
+        });
+
+        // ==================== HERO BACKGROUND IMAGES ====================
+        const heroImages = [
+            'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070',
+            'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070',
+            'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=2070',
+            'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070',
+            'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=2076',
+            'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?q=80&w=2076',
+            'https://images.unsplash.com/photo-1491002052546-bf38f186af56?q=80&w=2083',
+            'https://images.unsplash.com/photo-1464278533981-50106e6176b1?q=80&w=2074'
+        ];
+
+        function setRandomHeroImage() {
+            const randomIndex = Math.floor(Math.random() * heroImages.length);
+            const heroImg = document.querySelector('.hero-img');
+            if (heroImg) {
+                heroImg.style.backgroundImage = `url('${heroImages[randomIndex]}')`;
+            }
+        }
+
+        // Set random image on page load
+        setRandomHeroImage();
+
+        // ==================== AI CHATBOT ====================
+        let chatOpened = false;
+        
+        function toggleChat() {
+            const chatbot = document.getElementById('aiChatbot');
+            chatbot.classList.toggle('open');
+            if (chatbot.classList.contains('open')) {
+                chatOpened = true;
+                document.getElementById('chatBadge').style.display = 'none';
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Hide suggestions after first message
+            document.getElementById('chatSuggestions').style.display = 'none';
+
+            // Show typing indicator
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message bot typing';
+            typingDiv.innerHTML = '<div class="message-avatar">🤖</div><div class="message-content typing-dots"><span></span><span></span><span></span></div>';
+            document.getElementById('chatMessages').appendChild(typingDiv);
+
+            setTimeout(() => {
+                typingDiv.remove();
+                const response = getAIResponse(message);
+                addMessage(response, 'bot');
+            }, 1000 + Math.random() * 500);
+        }
+
+        function sendSuggestion(text) {
+            document.getElementById('chatInput').value = text;
+            sendChatMessage();
+        }
+
+        function handleChatKeypress(e) {
+            if (e.key === 'Enter') sendChatMessage();
+        }
+
+        function addMessage(text, sender) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-message ${sender}`;
+            const avatar = sender === 'bot' ? '<div class="message-avatar">🤖</div>' : '';
+            msgDiv.innerHTML = `${avatar}<div class="message-content">${text}</div>`;
+            messagesDiv.appendChild(msgDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function getAIResponse(message) {
+            const msg = message.toLowerCase().trim();
+            
+            // Greetings
+            if (/^(salam|salamlar|hello|hi|hey|merhaba|привет|здравствуй)/.test(msg)) {
+                return 'Salam! 😊 Mən DağTur AI köməkçisiyəm. Sizə turlar, otellər, dağlar və qiymətlər haqqında kömək edə bilərəm. Nə ilə maraqlanırsınız?';
+            }
+            
+            // Thanks
+            if (/^(sağ ol|təşəkkür|tesekkur|thanks|thank you|спасибо)/.test(msg)) {
+                return 'Dəyməz! 😊 Başqa sualınız varsa, xoşbəxtliklə cavablandıraram. Yaxşı səyahətlər! 🏔️';
+            }
+            
+            // Goodbye
+            if (/^(görüşənə|hələlik|bye|goodbye|sağ ol|пока)/.test(msg)) {
+                return 'Görüşənədək! 👋 DağTur ilə unudulmaz səyahətlər arzulayıram! 🏔️✨';
+            }
+            
+            // How are you
+            if (msg.includes('necəsən') || msg.includes('nə var') || msg.includes('how are')) {
+                return 'Yaxşıyam, təşəkkür edirəm! 😊 Sizə kömək etməyə hazıram. Hansı dağ və ya tur haqqında məlumat istəyirsiniz?';
+            }
+            
+            // Tours
+            if (msg.includes('tur') || msg.includes('populyar') || msg.includes('tour') || msg.includes('тур')) {
+                return '🏔️ <b>Ən populyar turlarımız:</b>\n\n' +
+                    '1️⃣ <b>Bazardüzü Ekspedisiyası</b> - ₼1200\n   • 7 gün, professional bələdçi\n\n' +
+                    '2️⃣ <b>Şahdağ Qış Turu</b> - ₼450\n   • 3 gün, otel+lift daxil\n\n' +
+                    '3️⃣ <b>Xınalıq Trekkinqi</b> - ₼350\n   • 3 gün, ev qonağı\n\n' +
+                    '4️⃣ <b>Qəbələ Ailəvi Tur</b> - ₼280\n   • 2 gün, Tufandağ daxil\n\n' +
+                    'Hansı tur haqqında ətraflı məlumat istəyirsiniz? 🎿';
+            }
+            
+            // Shahdag
+            if (msg.includes('şahdağ') || msg.includes('shahdag') || msg.includes('şahdag')) {
+                return '⛷️ <b>Şahdağ</b> - Azərbaycanın ən məşhur qış kurortu!\n\n' +
+                    '📍 <b>Məlumat:</b>\n' +
+                    '• Hündürlük: 4243 m\n' +
+                    '• Mövsüm: Noyabr - Aprel\n' +
+                    '• 14 xizək pisti\n' +
+                    '• 6 kanat yolu\n\n' +
+                    '🏨 <b>Otellər:</b>\n' +
+                    '• Şahdağ Resort ★★★★★ - ₼250/gecə\n' +
+                    '• PIK Palace ★★★★★ - ₼280/gecə\n\n' +
+                    '🎿 <b>3 günlük tur:</b> ₼450\n' +
+                    '(otel, lift, transfer daxil)\n\n' +
+                    'Rezervasiya etmək istəyirsiniz? 📝';
+            }
+            
+            // Bazarduzu
+            if (msg.includes('bazardüzü') || msg.includes('bazarduzu')) {
+                return '🏔️ <b>Bazardüzü</b> - Azərbaycanın ən hündür zirvəsi!\n\n' +
+                    '📍 <b>Məlumat:</b>\n' +
+                    '• Hündürlük: 4466 m\n' +
+                    '• Çətinlik: Yüksək\n' +
+                    '• Ən yaxşı mövsüm: İyun-Avqust\n' +
+                    '• Məkan: Qusar rayonu\n\n' +
+                    '🎒 <b>7 günlük ekspedisiya:</b> ₼1200\n' +
+                    '• Professional bələdçi\n' +
+                    '• Avadanlıq\n' +
+                    '• Qidalanma\n' +
+                    '• Sığorta daxil\n\n' +
+                    '⚠️ Fiziki hazırlıq tələb olunur!';
+            }
+            
+            // Khinalig
+            if (msg.includes('xınalıq') || msg.includes('xinaliq') || msg.includes('khinalig')) {
+                return '🏘️ <b>Xınalıq</b> - Dünyanın ən qədim yaşayış yerlərindən!\n\n' +
+                    '📍 <b>Məlumat:</b>\n' +
+                    '• Hündürlük: 2350 m\n' +
+                    '• Yaş: 5000+ il\n' +
+                    '• Unikal dil və mədəniyyət\n' +
+                    '• UNESCO namizədi\n\n' +
+                    '🏡 <b>3 günlük tur:</b> ₼350\n' +
+                    '• Ev qonağı təcrübəsi\n' +
+                    '• Milli yemək\n' +
+                    '• Mədəni tur\n' +
+                    '• Fotoqraf daxil\n\n' +
+                    'Həqiqi Azərbaycan mədəniyyətini yaşamaq istəyirsiniz? 🎭';
+            }
+            
+            // Tufandag / Gabala
+            if (msg.includes('tufandağ') || msg.includes('tufandag') || msg.includes('qəbələ') || msg.includes('gabala')) {
+                return '🌲 <b>Tufandağ / Qəbələ</b> - Ailə dostu kurort!\n\n' +
+                    '📍 <b>Məlumat:</b>\n' +
+                    '• Hündürlük: 4191 m\n' +
+                    '• 3.5 km kanat yolu\n' +
+                    '• 4 mövsüm aktiv\n\n' +
+                    '🎢 <b>Aktivlər:</b>\n' +
+                    '• Zipline\n' +
+                    '• At gəzintisi\n' +
+                    '• Qəbələ Land\n' +
+                    '• Nohur Gölü\n\n' +
+                    '👨‍👩‍👧‍👦 <b>2 günlük ailə turu:</b> ₼280\n' +
+                    'Uşaqlar üçün ideal! 🎠';
+            }
+            
+            // Prices
+            if (msg.includes('qiymət') || msg.includes('nece') || msg.includes('price') || msg.includes('цена') || msg.includes('fiyat') || msg.includes('ucuz') || msg.includes('bahalı')) {
+                return '💰 <b>Qiymət siyahısı:</b>\n\n' +
+                    '🎿 <b>Turlar:</b>\n' +
+                    '• Qəbələ Ailəvi: ₼280\n' +
+                    '• Xınalıq Trekkinq: ₼350\n' +
+                    '• Şahdağ Qış: ₼450\n' +
+                    '• Bazardüzü Ekspedisiya: ₼1200\n\n' +
+                    '🏨 <b>Otellər (gecəlik):</b>\n' +
+                    '• Xınalıq Ev Qonağı: ₼80\n' +
+                    '• Tufandağ Resort: ₼180\n' +
+                    '• Şahdağ Resort: ₼250\n' +
+                    '• Quba Palace: ₼320\n\n' +
+                    '💡 <b>Büdcəniz?</b> Mən sizə uyğun variant tapım!';
+            }
+            
+            // Hotels
+            if (msg.includes('otel') || msg.includes('hotel') || msg.includes('qalmaq') || msg.includes('гостиница')) {
+                return '🏨 <b>Tövsiyə olunan otellər:</b>\n\n' +
+                    '⭐⭐⭐⭐⭐ <b>Şahdağ Resort</b>\n' +
+                    '• ₼250/gecə • SPA, hovuz, ski-in\n\n' +
+                    '⭐⭐⭐⭐⭐ <b>Quba Palace</b>\n' +
+                    '• ₼320/gecə • 3 restoran, kazino\n\n' +
+                    '⭐⭐⭐⭐ <b>Tufandağ Resort</b>\n' +
+                    '• ₼180/gecə • Kanat yolu yaxın\n\n' +
+                    '⭐⭐⭐ <b>Xınalıq Ev Qonağı</b>\n' +
+                    '• ₼80/gecə • Avtentik təcrübə\n\n' +
+                    'Hansı otel maraqlandırır? 🛎️';
+            }
+            
+            // Reservation
+            if (msg.includes('rezerv') || msg.includes('sifariş') || msg.includes('booking') || msg.includes('бронь')) {
+                return '📝 <b>Rezervasiya üsulları:</b>\n\n' +
+                    '1️⃣ <b>Online:</b>\n' +
+                    '   • Yuxarıda "Turlar" bölməsi\n' +
+                    '   • "Qoşul" düyməsinə basın\n' +
+                    '   • Formu doldurun\n\n' +
+                    '2️⃣ <b>Telefon:</b>\n' +
+                    '   📞 +994 12 345 67 89\n' +
+                    '   📱 +994 50 123 45 67\n\n' +
+                    '3️⃣ <b>WhatsApp:</b>\n' +
+                    '   💬 +994 50 123 45 67\n\n' +
+                    '⏰ 7/24 xidmətinizdəyik!';
+            }
+            
+            // Weather
+            if (msg.includes('hava') || msg.includes('weather') || msg.includes('погода') || msg.includes('nə vaxt') || msg.includes('mövsüm')) {
+                return '🌤️ <b>Ən yaxşı mövsümlər:</b>\n\n' +
+                    '❄️ <b>Qış (Dek-Mar):</b>\n' +
+                    '• Şahdağ xizək\n' +
+                    '• Tufandağ qar\n\n' +
+                    '🌸 <b>Yaz (Apr-May):</b>\n' +
+                    '• Lahıc gəzintisi\n' +
+                    '• Xınalıq trekkinq\n\n' +
+                    '☀️ <b>Yay (İyun-Avq):</b>\n' +
+                    '• Bazardüzü ekspedisiya\n' +
+                    '• Bütün dağlar açıq\n\n' +
+                    '🍂 <b>Payız (Sen-Noy):</b>\n' +
+                    '• Mənzərəli trekkinq\n' +
+                    '• Az turist\n\n' +
+                    'Hansı mövsümdə gəlmək istəyirsiniz? 📅';
+            }
+            
+            // Contact
+            if (msg.includes('əlaqə') || msg.includes('telefon') || msg.includes('contact') || msg.includes('связь') || msg.includes('nömrə')) {
+                return '📞 <b>Əlaqə məlumatları:</b>\n\n' +
+                    '📍 <b>Ünvan:</b>\n' +
+                    'Bakı, Nizami küçəsi 45\n\n' +
+                    '📞 <b>Telefon:</b>\n' +
+                    '+994 12 345 67 89\n' +
+                    '+994 50 123 45 67\n\n' +
+                    '✉️ <b>E-poçt:</b>\n' +
+                    'info@dagtur.az\n' +
+                    'booking@dagtur.az\n\n' +
+                    '💬 <b>Sosial:</b>\n' +
+                    '@dagtur_az (Instagram)\n\n' +
+                    '⏰ 7/24 sizin xidmətinizdəyik!';
+            }
+            
+            // Location / How to get
+            if (msg.includes('necə get') || msg.includes('yol') || msg.includes('harada') || msg.includes('where') || msg.includes('как доехать')) {
+                return '🚗 <b>Nəqliyyat məlumatları:</b>\n\n' +
+                    '🏔️ <b>Şahdağ:</b>\n' +
+                    '• Bakıdan 3.5 saat\n' +
+                    '• Qusar şəhərindən 30 dəq\n\n' +
+                    '🏔️ <b>Qəbələ/Tufandağ:</b>\n' +
+                    '• Bakıdan 3 saat\n\n' +
+                    '🏔️ <b>Xınalıq:</b>\n' +
+                    '• Bakıdan 4 saat\n' +
+                    '• Quba-dan 1.5 saat\n\n' +
+                    '🚐 Bütün turlarımızda <b>transfer daxildir!</b>';
+            }
+            
+            // Difficulty
+            if (msg.includes('çətin') || msg.includes('asan') || msg.includes('difficult') || msg.includes('easy') || msg.includes('başlayanlar')) {
+                return '📊 <b>Çətinlik səviyyələri:</b>\n\n' +
+                    '🟢 <b>Asan (Başlayanlar üçün):</b>\n' +
+                    '• Qəbələ Ailəvi Tur\n' +
+                    '• Lahıc Gəzintisi\n' +
+                    '• Beşbarmaq\n\n' +
+                    '🟡 <b>Orta:</b>\n' +
+                    '• Xınalıq Trekkinqi\n' +
+                    '• Babadağ\n' +
+                    '• Şahdağ Turu\n\n' +
+                    '🔴 <b>Çətin (Təcrübəli):</b>\n' +
+                    '• Bazardüzü Ekspedisiyası\n' +
+                    '• Murovdağ\n\n' +
+                    'Təcrübəniz hansı səviyyədədir? 🥾';
+            }
+            
+            // What to bring
+            if (msg.includes('götür') || msg.includes('lazım') || msg.includes('hazırlan') || msg.includes('bring') || msg.includes('pack')) {
+                return '🎒 <b>Nə götürməli:</b>\n\n' +
+                    '👟 <b>Geyim:</b>\n' +
+                    '• Trekking ayaqqabı\n' +
+                    '• Qatlanan gödəkçə\n' +
+                    '• Günəş eynəyi\n\n' +
+                    '📦 <b>Avadanlıq:</b>\n' +
+                    '• Bel çantası (20-30L)\n' +
+                    '• Su şüşəsi\n' +
+                    '• Günəş kremi\n\n' +
+                    '💡 <b>Qeyd:</b> Turlarımızda əsas avadanlıq təmin olunur!\n\n' +
+                    'Konkret tur üçün siyahı lazımdır? 📋';
+            }
+            
+            // Default - smart fallback
+            const keywords = msg.split(' ').filter(w => w.length > 3);
+            if (keywords.some(k => Object.keys(mountains).some(m => m.includes(k) || mountains[m].name.toLowerCase().includes(k)))) {
+                return '🏔️ Bu dağ haqqında məlumat almaq istəyirsiniz? Xəritədə həmin dağa basa bilərsiniz və ya konkret adını yazın (məs: Şahdağ, Bazardüzü, Xınalıq)';
+            }
+            
+            return '🤖 <b>Mən sizə kömək edə bilərəm:</b>\n\n' +
+                '🏔️ Dağlar haqqında məlumat\n' +
+                '🎿 Turlar və qiymətlər\n' +
+                '🏨 Otel tövsiyələri\n' +
+                '📝 Rezervasiya köməyi\n' +
+                '🌤️ Mövsüm məsləhətləri\n' +
+                '📞 Əlaqə məlumatları\n\n' +
+                'Yuxarıdakılardan birini seçin və ya sualınızı yazın! 😊';
+        }
+    </script>
+</body>
+</html>
