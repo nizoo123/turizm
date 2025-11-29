@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sevimlilər | DağTur</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .fav-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 120px 5% 60px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .fav-hero::before {
+            content: '❤️';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15rem;
+            opacity: 0.05;
+        }
+        .fav-hero h1 {
+            font-family: var(--font-head);
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        .fav-hero p {
+            opacity: 0.8;
+            font-size: 1.1rem;
+            position: relative;
+        }
+        
+        .fav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 5%;
+        }
+        
+        .fav-empty {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+        .fav-empty-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+        .fav-empty h3 {
+            font-family: var(--font-head);
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        .fav-empty p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+        .fav-empty a {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: var(--accent);
+            color: var(--dark);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .fav-empty a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245,158,11,0.3);
+        }
+        
+        .fav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .fav-card {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .fav-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fav-card-img {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .fav-remove {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.95);
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            color: #ef4444;
+        }
+        .fav-remove:hover {
+            background: #ef4444;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .fav-card-body {
+            padding: 1.2rem;
+        }
+        .fav-card-body h3 {
+            font-family: var(--font-head);
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+        }
+        .fav-card-alt {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .fav-card-body p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+        .fav-card-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .fav-card-btns a {
+            flex: 1;
+            padding: 0.6rem;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .fav-card-btns .btn-detail {
+            background: var(--primary);
+            color: white;
+        }
+        .fav-card-btns .btn-detail:hover {
+            background: var(--secondary);
+        }
+        .fav-card-btns .btn-map {
+            background: var(--light);
+            color: var(--primary);
+        }
+        .fav-card-btns .btn-map:hover {
+            background: var(--accent);
+            color: var(--dark);
+        }
+        
+        .back-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15,23,42,0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        .logo-icon { font-size: 1.8rem; }
+        .logo-text { 
+            font-family: var(--font-head); 
+            font-size: 1.4rem; 
+            font-weight: 700; 
+            color: white; 
+        }
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            padding: 0.6rem 1.2rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 30px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .back-btn:hover { 
+            background: var(--accent); 
+            color: var(--dark); 
+            border-color: var(--accent); 
+        }
+    </style>
+</head>
+<body>
+    <nav class="back-nav">
+        <a href="index.html" class="logo">
+            <span class="logo-icon">⛰️</span>
+            <span class="logo-text">DağTur</span>
+        </a>
+        <a href="index.html" class="back-btn">← Ana Səhifə</a>
+    </nav>
+
+    <section class="fav-hero">
+        <h1>❤️ Sevimlilərim</h1>
+        <p>Saxladığınız dağlar burada</p>
+    </section>
+
+    <div class="fav-container">
+        <div id="favContent"></div>
+    </div>
+
+    <script>
+        const mountains = {
+            bazarduzu: { name: 'Bazardüzü', alt: '4466 m', lat: 41.2208, lng: 47.8586, desc: 'Azərbaycanın ən hündür zirvəsi', img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070' },
+            shahdag: { name: 'Şahdağ', alt: '4243 m', lat: 41.2753, lng: 48.1361, desc: 'Qış idman kurortu', img: 'https://images.unsplash.com/photo-1491002052546-bf38f186af56?q=80&w=2083' },
+            tufandag: { name: 'Tufandağ', alt: '4191 m', lat: 41.0167, lng: 47.8667, desc: 'Ailə kurortu, kanat yolu', img: 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=2076' },
+            babadag: { name: 'Babadağ', alt: '3629 m', lat: 41.0125, lng: 48.2039, desc: 'Müqəddəs ziyarətgah', img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070' },
+            gobustan: { name: 'Qobustan', alt: '400 m', lat: 40.0853, lng: 49.3819, desc: 'UNESCO Dünya İrsi', img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2074' },
+            talysh: { name: 'Talış Dağları', alt: '2477 m', lat: 38.8833, lng: 48.5833, desc: 'Hirkan meşələri', img: 'https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=2070' },
+            xinaliq: { name: 'Xınalıq', alt: '2350 m', lat: 41.1833, lng: 48.1333, desc: 'Dünyanın ən qədim kəndi', img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070' },
+            lahic: { name: 'Lahıc', alt: '1200 m', lat: 40.8472, lng: 48.3861, desc: 'Mis sənətkarlığı mərkəzi', img: 'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?q=80&w=2076' },
+            mudafidag: { name: 'Müdafiə Dağı', alt: '3888 m', lat: 40.9833, lng: 48.4833, desc: 'İsmayıllı zirvəsi', img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070' },
+            kapaz: { name: 'Kəpəz', alt: '3066 m', lat: 40.5167, lng: 46.3667, desc: 'Göygöl mənzərəsi', img: 'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=2070' },
+            murovdag: { name: 'Murovdağ', alt: '3724 m', lat: 40.4500, lng: 46.8833, desc: 'Kiçik Qafqazın zirvəsi', img: 'https://images.unsplash.com/photo-1464278533981-50106e6176b1?q=80&w=2074' },
+            beshbarmag: { name: 'Beşbarmaq', alt: '520 m', lat: 40.9611, lng: 49.2333, desc: 'İkonik ziyarətgah', img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070' }
+        };
+
+        const getFavs = () => JSON.parse(localStorage.getItem('dagtur_favorites') || '[]');
+        const saveFavs = (f) => localStorage.setItem('dagtur_favorites', JSON.stringify(f));
+
+        function removeFav(id) {
+            const favs = getFavs().filter(x => x !== id);
+            saveFavs(favs);
+            render();
+        }
+
+        function render() {
+            const favs = getFavs();
+            const container = document.getElementById('favContent');
+
+            if (favs.length === 0) {
+                container.innerHTML = `
+                    <div class="fav-empty">
+                        <div class="fav-empty-icon">💔</div>
+                        <h3>Sevimli yoxdur</h3>
+                        <p>Hələ heç bir dağ sevimlilərə əlavə edilməyib</p>
+                        <a href="index.html#mountains">🏔️ Dağları Kəşf Et</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const cards = favs.map((id, i) => {
+                const m = mountains[id];
+                if (!m) return '';
+                return `
+                    <div class="fav-card" style="animation-delay: ${i * 0.1}s">
+                        <div class="fav-card-img" style="background-image:url('${m.img}')">
+                            <button class="fav-remove" onclick="removeFav('${id}')" title="Sevimlilərdən çıxar">♥</button>
+                        </div>
+                        <div class="fav-card-body">
+                            <h3>${m.name}</h3>
+                            <span class="fav-card-alt">${m.alt}</span>
+                            <p>${m.desc}</p>
+                            <div class="fav-card-btns">
+                                <a href="mountain-detail.html?mountain=${id}" class="btn-detail">📋 Ətraflı</a>
+                                <a href="https://www.google.com/maps/dir/?api=1&destination=${m.lat},${m.lng}" target="_blank" class="btn-map">📍 Xəritə</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = `<div class="fav-grid">${cards}</div>`;
+        }
+
+        render();
+    </script>
+</body>
+</html>
+

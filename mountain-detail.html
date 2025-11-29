@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dağ Məlumatları | DağTur</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="detail.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar" style="background: var(--dark);">
+        <a href="index.html" class="logo" style="text-decoration:none;">
+            <span class="logo-icon">⛰️</span>
+            <span class="logo-text">DağTur</span>
+        </a>
+        <a href="index.html" class="back-link">← Ana Səhifə</a>
+    </nav>
+
+    <section class="detail-hero">
+        <div class="detail-bg" id="heroBg"></div>
+        <div class="detail-overlay"></div>
+        <div class="detail-content">
+            <span class="detail-badge" id="badge">Zirvə</span>
+            <h1 id="title">Dağ</h1>
+            <div class="detail-meta">
+                <span>📍 <span id="location">Rayon</span></span>
+                <span>⛰️ <span id="altitude">0m</span></span>
+                <span>📏 <span id="distance">-- km</span></span>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-bar">
+        <div class="stats-row">
+            <div class="stat-item">
+                <span class="stat-icon">🌡️</span>
+                <span class="stat-val" id="temp">--</span>
+                <span class="stat-lbl">Temperatur</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">🥾</span>
+                <span class="stat-val" id="diff">--</span>
+                <span class="stat-lbl">Çətinlik</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">⏱️</span>
+                <span class="stat-val" id="duration">--</span>
+                <span class="stat-lbl">Müddət</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">📅</span>
+                <span class="stat-val" id="season">--</span>
+                <span class="stat-lbl">Mövsüm</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section">
+        <div class="about-box">
+            <h2>Dağ Haqqında</h2>
+            <p id="desc">Məlumat...</p>
+            <div class="tags-row" id="tags"></div>
+        </div>
+    </section>
+
+    <section class="places-section hotels-bg">
+        <div class="places-box">
+            <div class="places-head">
+                <span>🏨</span>
+                <h2>Yaxınlıqdakı Hotellər</h2>
+            </div>
+            <div class="places-grid" id="hotels"></div>
+        </div>
+    </section>
+
+    <section class="places-section">
+        <div class="places-box">
+            <div class="places-head">
+                <span>🍽️</span>
+                <h2>Restoranlar</h2>
+            </div>
+            <div class="places-grid" id="restaurants"></div>
+        </div>
+    </section>
+
+    <section class="places-section activities-bg">
+        <div class="places-box">
+            <div class="places-head light">
+                <span>🎯</span>
+                <h2>Aktivitələr</h2>
+            </div>
+            <div class="activities-grid" id="activities"></div>
+        </div>
+    </section>
+
+    <section class="directions-section">
+        <div class="directions-box">
+            <h2>Necə Getmək Olar?</h2>
+            <div class="dir-grid">
+                <div class="dir-card">
+                    <span>🚗</span>
+                    <h3>Avtomobil</h3>
+                    <p id="dirCar">--</p>
+                </div>
+                <div class="dir-card">
+                    <span>🚌</span>
+                    <h3>Avtobus</h3>
+                    <p id="dirBus">--</p>
+                </div>
+                <div class="dir-card">
+                    <span>🗺️</span>
+                    <h3>Tur</h3>
+                    <p id="dirTour">--</p>
+                </div>
+            </div>
+            <a href="#" class="btn btn-primary" id="mapsBtn" target="_blank" style="margin-top:2rem;">📍 Google Maps</a>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="cta-box">
+            <h2>Bu Dağa Səyahət Etmək İstəyirsiniz?</h2>
+            <p>Professional bələdçilərimiz ilə unudulmaz səyahət.</p>
+            <a href="index.html#tours" class="btn btn-primary btn-lg">Tur Sifariş Et</a>
+        </div>
+    </section>
+
+    <!-- Restaurant Reservation Modal -->
+    <div class="reservation-modal" id="reservationModal">
+        <div class="reservation-box">
+            <button class="reservation-close" onclick="closeReservation()">&times;</button>
+            <h2>🍽️ Restoran Rezervasiyası</h2>
+            <p class="reservation-name" id="resName"></p>
+            <form onsubmit="submitReservation(event)">
+                <div class="res-form-group">
+                    <label>Ad Soyad</label>
+                    <input type="text" id="resGuestName" required placeholder="Adınız">
+                </div>
+                <div class="res-form-group">
+                    <label>Telefon</label>
+                    <input type="tel" id="resGuestPhone" required placeholder="+994 XX XXX XX XX">
+                </div>
+                <div class="res-form-row">
+                    <div class="res-form-group">
+                        <label>Tarix</label>
+                        <input type="date" id="resDate" required>
+                    </div>
+                    <div class="res-form-group">
+                        <label>Saat</label>
+                        <input type="time" id="resTime" required value="19:00">
+                    </div>
+                </div>
+                <div class="res-form-group">
+                    <label>Nəfər sayı</label>
+                    <select id="resGuests" required>
+                        <option value="1">1 nəfər</option>
+                        <option value="2" selected>2 nəfər</option>
+                        <option value="3">3 nəfər</option>
+                        <option value="4">4 nəfər</option>
+                        <option value="5">5 nəfər</option>
+                        <option value="6">6 nəfər</option>
+                        <option value="7+">7+ nəfər</option>
+                    </select>
+                </div>
+                <div class="res-form-group">
+                    <label>Qeyd (istəyə görə)</label>
+                    <textarea id="resNotes" rows="2" placeholder="Xüsusi istəklər..."></textarea>
+                </div>
+                <button type="submit" class="res-submit-btn">Rezerv Et</button>
+                <a href="#" id="resCallBtn" class="res-call-btn">📞 Birbaşa Zəng Et</a>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        .reservation-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.9);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            padding: 1rem;
+        }
+        .reservation-modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .reservation-box {
+            background: white;
+            border-radius: 20px;
+            max-width: 420px;
+            width: 100%;
+            padding: 2rem;
+            position: relative;
+            transform: scale(0.9);
+            transition: all 0.3s;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .reservation-modal.open .reservation-box {
+            transform: scale(1);
+        }
+        .reservation-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 35px;
+            height: 35px;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .reservation-close:hover {
+            background: #ef4444;
+            color: white;
+        }
+        .reservation-box h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #1a3a52;
+            margin-bottom: 0.5rem;
+        }
+        .reservation-name {
+            color: #f59e0b;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .res-form-group {
+            margin-bottom: 1rem;
+        }
+        .res-form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 0.3rem;
+        }
+        .res-form-group input,
+        .res-form-group select,
+        .res-form-group textarea {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 2px solid #f1f5f9;
+            border-radius: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .res-form-group input:focus,
+        .res-form-group select:focus,
+        .res-form-group textarea:focus {
+            border-color: #1a3a52;
+            outline: none;
+        }
+        .res-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .res-submit-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #0f172a;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 0.5rem;
+        }
+        .res-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245,158,11,0.3);
+        }
+        .res-call-btn {
+            display: block;
+            text-align: center;
+            margin-top: 0.8rem;
+            padding: 0.8rem;
+            background: #22c55e;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .res-call-btn:hover {
+            background: #16a34a;
+        }
+        .res-toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 3000;
+        }
+        .res-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+
+    <footer class="footer">
+        <div class="footer-bottom">
+            <p>© 2025 DağTur. Bütün hüquqlar qorunur.</p>
+        </div>
+    </footer>
+
+    <script>
+        const data = {
+            bazarduzu: {
+                name: 'Bazardüzü',
+                badge: 'Ən Hündür Zirvə',
+                alt: '4466 m',
+                location: 'Qusar rayonu',
+                lat: 41.2208,
+                lng: 47.8586,
+                temp: '-5°C / +15°C',
+                diff: 'Çətin',
+                duration: '5-7 gün',
+                season: 'İyun-Sentyabr',
+                desc: 'Bazardüzü dağı Azərbaycanın ən hündür zirvəsidir. Böyük Qafqaz silsiləsində, Azərbaycan-Rusiya sərhədində yerləşir. Qədim dövrlərdə karvan yolları buradan keçirdi. Alpinistlər üçün ciddi sınaq sayılır və professional hazırlıq tələb edir.',
+                tags: ['🏔️ Alpinizm', '❄️ Qar örtüyü', '🎒 Ekspedisiya', '📸 Panorama', '⚠️ Professional'],
+                img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070',
+                hotels: [
+                    { name: 'Qusar Resort', rating: 4.5, price: '₼120', dist: '25 km', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=400' },
+                    { name: 'Şahdağ Hotel', rating: 4.8, price: '₼200', dist: '30 km', img: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=400' },
+                    { name: 'Mountain Inn', rating: 4.2, price: '₼80', dist: '20 km', img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=400' }
+                ],
+                restaurants: [
+                    { name: 'Dağ Evi', type: 'Milli mətbəx', rating: 4.6, phone: '+994502221100', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=400' },
+                    { name: 'Qusar Kabab', type: 'Kabab, Mangal', rating: 4.4, phone: '+994503331122', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=400' },
+                    { name: 'Zirvə Cafe', type: 'Çay evi', rating: 4.3, phone: '+994504441133', img: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=400' }
+                ],
+                activities: [
+                    { name: 'Alpinizm Turu', icon: '🧗', desc: 'Professional bələdçi ilə zirvəyə qalxış' },
+                    { name: 'Kamp Gecəsi', icon: '⛺', desc: 'Ulduzlar altında gecələmə' },
+                    { name: 'Foto Tur', icon: '📷', desc: 'Peşəkar fotoqrafla mənzərə çəkilişi' },
+                    { name: 'Trekking', icon: '🥾', desc: 'Müxtəlif çətinlik dərəcəli yürüyüşlər' }
+                ],
+                dir: { car: 'Bakıdan Qusar ~180 km, 3-4 saat. Şamaxı-İsmayıllı-Quba-Qusar marşrutu.', bus: 'Bakı Avtovağzalından Qusar reysləri. Qiymət: ₼8-10.', tour: 'DağTur ekspedisiyası - avadanlıq, nəqliyyat, qidalanma daxil.' }
+            },
+            shahdag: {
+                name: 'Şahdağ',
+                badge: 'Qış Kurortu',
+                alt: '4243 m',
+                location: 'Qusar rayonu',
+                lat: 41.2753,
+                lng: 48.1361,
+                temp: '-10°C / +20°C',
+                diff: 'Orta',
+                duration: '2-4 gün',
+                season: 'Bütün il',
+                desc: 'Şahdağ Azərbaycanın ən məşhur dağ-xizək kurortudur. 2012-ci ildən fəaliyyət göstərir. Müasir infrastruktur, yüksək keyfiyyətli xizək yamacları və 5 ulduzlu otellər. Qışda xizək, yayda trekking üçün ideal.',
+                tags: ['⛷️ Xizək', '🏂 Snowboard', '🚡 Kanat yolu', '🏨 5 ulduz', '🎿 14 yamac'],
+                img: 'https://images.unsplash.com/photo-1491002052546-bf38f186af56?q=80&w=2083',
+                hotels: [
+                    { name: 'Şahdağ Hotel', rating: 4.9, price: '₼350', dist: 'Kurortda', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=400' },
+                    { name: 'Park Chalet', rating: 4.7, price: '₼280', dist: 'Kurortda', img: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=400' },
+                    { name: 'PIK Palace', rating: 4.8, price: '₼300', dist: '2 km', img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=400' }
+                ],
+                restaurants: [
+                    { name: 'Zirve Restaurant', type: 'Beynəlxalq', rating: 4.7, phone: '+994125551100', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=400' },
+                    { name: 'Dağ Evi', type: 'Milli', rating: 4.5, phone: '+994505552211', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=400' },
+                    { name: 'Après-Ski Bar', type: 'Bar', rating: 4.4, phone: '+994125553322', img: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=400' }
+                ],
+                activities: [
+                    { name: 'Xizək Dərsləri', icon: '⛷️', desc: 'Hər səviyyə üçün instruktor' },
+                    { name: 'Snowboard', icon: '🏂', desc: 'İcarə və dərslər' },
+                    { name: 'Kanat Yolu', icon: '🚡', desc: 'Mənzərəli gəzinti' },
+                    { name: 'SPA', icon: '💆', desc: 'Relaksasiya xidmətləri' }
+                ],
+                dir: { car: 'Bakıdan ~220 km, 3.5 saat. Şamaxı-Quba-Qusar marşrutu.', bus: 'Kurort şattl xidməti. Əvvəlcədən rezervasiya.', tour: 'DağTur qış paketləri - otel, lift, transfer daxil.' }
+            },
+            tufandag: {
+                name: 'Tufandağ',
+                badge: 'Ailə Kurortu',
+                alt: '4191 m',
+                location: 'Qəbələ rayonu',
+                lat: 41.0167,
+                lng: 47.8667,
+                temp: '-8°C / +22°C',
+                diff: 'Asan-Orta',
+                duration: '1-3 gün',
+                season: 'Bütün il',
+                desc: 'Qəbələ rayonunda yerləşən Tufandağ ailələr üçün ideal kurortdur. 3.5 km uzunluğunda kanat yolu ilə zirvəyə qalxmaq mümkündür. Qışda xizək, yayda zipline, at gəzintisi və piknik.',
+                tags: ['🚡 3.5 km kanat', '👨‍👩‍👧‍👦 Ailəvi', '🎢 Zipline', '🐴 At gəzintisi', '🏕️ Piknik'],
+                img: 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?q=80&w=2076',
+                hotels: [
+                    { name: 'Qafqaz Riverside', rating: 4.6, price: '₼180', dist: '5 km', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=400' },
+                    { name: 'Qafqaz Tufandağ', rating: 4.8, price: '₼220', dist: 'Kurortda', img: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=400' },
+                    { name: 'Qafqaz Sport', rating: 4.5, price: '₼150', dist: '3 km', img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=400' }
+                ],
+                restaurants: [
+                    { name: 'Çıraq', type: 'Milli', rating: 4.7, phone: '+994246661100', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=400' },
+                    { name: 'Riverside', type: 'Beynəlxalq', rating: 4.5, phone: '+994506662211', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=400' },
+                    { name: 'Qəbələ Xan', type: 'Mangal', rating: 4.6, phone: '+994246663322', img: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=400' }
+                ],
+                activities: [
+                    { name: 'Kanat Yolu', icon: '🚡', desc: '30 dəqiqəlik heyrətamiz mənzərə' },
+                    { name: 'Zipline', icon: '🎢', desc: 'Adrenalin dolu uçuş' },
+                    { name: 'At Gəzintisi', icon: '🐴', desc: 'Dağ yamaclarında gəzinti' },
+                    { name: 'Piknik', icon: '🧺', desc: 'Təbiətin qoynunda' }
+                ],
+                dir: { car: 'Bakıdan Qəbələyə ~220 km, 3 saat. Şamaxı-İsmayıllı-Qəbələ.', bus: 'Bakı Avtovağzalından Qəbələ reysləri. ₼10-12.', tour: 'Günübirlik tur paketləri mövcuddur.' }
+            },
+            babadag: {
+                name: 'Babadağ',
+                badge: 'Müqəddəs Zirvə',
+                alt: '3629 m',
+                location: 'Quba rayonu',
+                lat: 41.0125,
+                lng: 48.2039,
+                temp: '-3°C / +18°C',
+                diff: 'Orta',
+                duration: '2-3 gün',
+                season: 'May-Oktyabr',
+                desc: 'Babadağ həm dağçılıq, həm də dini ziyarət üçün önəmli yerdir. Zirvədə qədim pir var və hər il minlərlə ziyarətçi cəlb edir. Yayda alp çəmənlikləri rəngarəng çiçəklərlə örtülür.',
+                tags: ['🕌 Ziyarətgah', '🌸 Alp çəmənliyi', '🥾 Trekking', '🙏 Mənəvi', '📸 Mənzərə'],
+                img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070',
+                hotels: [
+                    { name: 'Quba Palace', rating: 4.4, price: '₼130', dist: '15 km', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=400' },
+                    { name: 'Quba Inn', rating: 4.0, price: '₼70', dist: '18 km', img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=400' }
+                ],
+                restaurants: [
+                    { name: 'Quba Restoranı', type: 'Milli', rating: 4.5, phone: '+994237771100', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=400' },
+                    { name: 'Çay Evi', type: 'Çay, Desert', rating: 4.3, phone: '+994507772211', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=400' }
+                ],
+                activities: [
+                    { name: 'Ziyarət', icon: '🕌', desc: 'Müqəddəs pirə ziyarət' },
+                    { name: 'Trekking', icon: '🥾', desc: 'Zirvəyə yürüyüş' },
+                    { name: 'Çiçək Müşahidəsi', icon: '🌸', desc: 'Nadir alp bitkiləri' },
+                    { name: 'Günəş Doğuşu', icon: '🌅', desc: 'Zirvədən şəfəq' }
+                ],
+                dir: { car: 'Bakıdan Quba ~170 km. Sonra dağa 20 km.', bus: 'Bakıdan Quba reysləri. Qubadan taksi/minibus.', tour: 'Ziyarət turları mövcuddur.' }
+            },
+            gobustan: {
+                name: 'Qobustan',
+                badge: 'UNESCO İrsi',
+                alt: '400 m',
+                location: 'Qobustan rayonu',
+                lat: 40.0853,
+                lng: 49.3819,
+                temp: '+5°C / +35°C',
+                diff: 'Asan',
+                duration: 'Yarım gün',
+                season: 'Bütün il',
+                desc: 'Qobustan UNESCO Dünya İrsi Siyahısına daxildir. 6000 ildən çox tarixi olan qayaüstü rəsmlər qədim insanların həyatı haqqında məlumat verir. Ərazidə palçıq vulkanları da var.',
+                tags: ['🏛️ UNESCO', '🎨 Petroqliflər', '🌋 Vulkanlar', '📚 Muzey', '👨‍👩‍👧‍👦 Ailəvi'],
+                img: 'https://images.unsplash.com/photo-1464278533981-50106e6176b1?q=80&w=2074',
+                hotels: [
+                    { name: 'Bakı otelləri', rating: 4.5, price: '₼100+', dist: '65 km', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=400' },
+                    { name: 'Gobustan Hotel', rating: 3.8, price: '₼50', dist: '5 km', img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=400' }
+                ],
+                restaurants: [
+                    { name: 'Qobustan Çay Evi', type: 'Çay', rating: 4.0, phone: '+994188881100', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=400' },
+                    { name: 'Sahil Restoranı', type: 'Balıq', rating: 4.3, phone: '+994508882211', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=400' }
+                ],
+                activities: [
+                    { name: 'Muzey Turu', icon: '🏛️', desc: 'İnteraktiv muzey ziyarəti' },
+                    { name: 'Petroqliflər', icon: '🎨', desc: '6000 illik tarixə səyahət' },
+                    { name: 'Palçıq Vulkanları', icon: '🌋', desc: 'Unikal geoloji fenomen' },
+                    { name: 'Foto Tur', icon: '📷', desc: 'Landşaft çəkilişi' }
+                ],
+                dir: { car: 'Bakıdan cənub ~65 km, 1 saat.', bus: '20 Yanvar metrosundan 195 avtobus.', tour: 'Günübirlik ekskursiya turları.' }
+            },
+            talysh: {
+                name: 'Talış Dağları',
+                badge: 'Subtropik Cənnət',
+                alt: '2477 m',
+                location: 'Lənkəran rayonu',
+                lat: 38.8833,
+                lng: 48.5833,
+                temp: '+5°C / +30°C',
+                diff: 'Asan-Orta',
+                duration: '2-4 gün',
+                season: 'Mart-Noyabr',
+                desc: 'Talış dağları Azərbaycanın cənub-şərqində yerləşir. Subtropik iqlim sayəsində sıx meşələr və zəngin flora-fauna. Hirkan Milli Parkı burada yerləşir və nadir dəmirağac meşələri ilə məşhurdur.',
+                tags: ['🌳 Hirkan meşəsi', '🦜 Fauna', '🌿 Subtropik', '🌊 Şəlalələr', '🏕️ Ekoturizm'],
+                img: 'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=2070',
+                hotels: [
+                    { name: 'Lənkəran Springs', rating: 4.3, price: '₼120', dist: '10 km', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=400' },
+                    { name: 'Khan Lankaran', rating: 4.6, price: '₼160', dist: '15 km', img: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=400' },
+                    { name: 'Relax Beach', rating: 4.1, price: '₼80', dist: '20 km', img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=400' }
+                ],
+                restaurants: [
+                    { name: 'Lənkəran Evi', type: 'Milli', rating: 4.6, phone: '+994259991100', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=400' },
+                    { name: 'Sahil Balıq', type: 'Dəniz', rating: 4.5, phone: '+994509992211', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=400' },
+                    { name: 'Çay Bağı', type: 'Çay', rating: 4.4, phone: '+994259993322', img: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=400' }
+                ],
+                activities: [
+                    { name: 'Hirkan Parkı', icon: '🌳', desc: 'Milli parkda gəzinti' },
+                    { name: 'Şəlalə Turu', icon: '🌊', desc: 'Gözəl şəlalələrə səyahət' },
+                    { name: 'Quş Müşahidəsi', icon: '🦜', desc: 'Nadir quş növləri' },
+                    { name: 'Çay Bağları', icon: '🍵', desc: 'Çay istehsalını gör' }
+                ],
+                dir: { car: 'Bakıdan Lənkəran ~270 km, 4 saat.', bus: 'Bakıdan Lənkəran gündəlik reysler.', tour: 'Talış ekoturizm paketləri.' }
+            },
+            xinaliq: {
+                name: 'Xınalıq',
+                badge: 'Qədim Kənd',
+                alt: '2350 m',
+                location: 'Quba rayonu',
+                lat: 41.1833,
+                lng: 48.1333,
+                temp: '-10°C / +20°C',
+                diff: 'Orta',
+                duration: '2-3 gün',
+                season: 'May-Oktyabr',
+                desc: 'Xınalıq dünyanın ən qədim yaşayış yerlərindən biridir. 5000 illik tarixə malik bu kənd öz unikal dili və mədəniyyəti ilə seçilir. Burada insanlar hələ də ənənəvi həyat tərzini qoruyurlar.',
+                tags: ['🏘️ Qədim kənd', '🗣️ Unikal dil', '🎭 Mədəniyyət', '📸 Etnoqrafiya', '🥾 Trekking'],
+                img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070',
+                hotels: [
+                    { name: 'Xınalıq Ev Qonağı', rating: 4.5, price: '₼60', dist: 'Kənddə', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=400' },
+                    { name: 'Quba Palace', rating: 4.4, price: '₼130', dist: '35 km', img: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=400' }
+                ],
+                restaurants: [
+                    { name: 'Xınalıq Evi', type: 'Kənd yeməkləri', rating: 4.6, phone: '+994501001100', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=400' },
+                    { name: 'Dağ Çay Evi', type: 'Çay, Xəngəl', rating: 4.4, phone: '+994501002211', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=400' }
+                ],
+                activities: [
+                    { name: 'Kənd Turu', icon: '🏘️', desc: 'Qədim evlərə ekskursiya' },
+                    { name: 'Xalça Toxuma', icon: '🧶', desc: 'Ənənəvi sənətkarlıq' },
+                    { name: 'Trekking', icon: '🥾', desc: 'Dağ yürüyüşləri' },
+                    { name: 'Foto Tur', icon: '📷', desc: 'Etnoqrafik çəkilişlər' }
+                ],
+                dir: { car: 'Bakıdan Quba ~170 km, sonra Xınalıq ~30 km dağ yolu.', bus: 'Qubadan Xınalıqa minibus.', tour: 'DağTur Xınalıq paketləri.' }
+            },
+            lahic: {
+                name: 'Lahıc',
+                badge: 'Mis Sənətkarlığı',
+                alt: '1200 m',
+                location: 'İsmayıllı rayonu',
+                lat: 40.8472,
+                lng: 48.3861,
+                temp: '+2°C / +25°C',
+                diff: 'Asan',
+                duration: '1-2 gün',
+                season: 'Bütün il',
+                desc: 'Lahıc mis sənətkarlığı ilə dünyaca məşhurdur. UNESCO qeyri-maddi mədəni irs siyahısına daxildir. Qədim küçələri, tarixi hamamı və sənətkarlıq emalatxanaları ilə ziyarətçiləri cəlb edir.',
+                tags: ['🔨 Mis sənəti', '🏛️ UNESCO', '🛁 Qədim hamam', '🛍️ Suvenirlər', '📸 Tarix'],
+                img: 'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?q=80&w=2076',
+                hotels: [
+                    { name: 'Lahıc Inn', rating: 4.3, price: '₼80', dist: 'Kənddə', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=400' },
+                    { name: 'Qalacıq Hotel', rating: 4.5, price: '₼100', dist: '5 km', img: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=400' }
+                ],
+                restaurants: [
+                    { name: 'Lahıc Evi', type: 'Milli', rating: 4.7, phone: '+994501101100', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=400' },
+                    { name: 'Mis Qazanı', type: 'Ənənəvi', rating: 4.5, phone: '+994501102211', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=400' }
+                ],
+                activities: [
+                    { name: 'Mis Ustaxanası', icon: '🔨', desc: 'Sənətkarlıq prosesini izlə' },
+                    { name: 'Hamam Ziyarəti', icon: '🛁', desc: 'Tarixi hamam' },
+                    { name: 'Küçə Turu', icon: '🚶', desc: 'Daş döşənmiş küçələr' },
+                    { name: 'Alış-veriş', icon: '🛍️', desc: 'Əl işi suvenirlər' }
+                ],
+                dir: { car: 'Bakıdan ~180 km, 2.5 saat. Şamaxı-İsmayıllı marşrutu.', bus: 'İsmayıllıdan Lahıca minibus.', tour: 'Günübirlik Lahıc turları.' }
+            },
+            mudafidag: {
+                name: 'Müdafiə Dağı',
+                badge: 'Alpinist Zirvəsi',
+                alt: '3888 m',
+                location: 'İsmayıllı rayonu',
+                lat: 40.9833,
+                lng: 48.4833,
+                temp: '-15°C / +18°C',
+                diff: 'Çətin',
+                duration: '3-5 gün',
+                season: 'İyun-Sentyabr',
+                desc: 'Müdafiə Dağı İsmayıllı rayonunda yerləşən əzəmətli zirvədir. Alpinistlər və trekkerlər üçün ciddi sınaq təqdim edir. Qarlı zirvələri və möhtəşəm mənzərələri ilə məşhurdur.',
+                tags: ['🏔️ Alpinizm', '❄️ Qar', '🎒 Ekspedisiya', '⚠️ Çətin', '📸 Panorama'],
+                img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070',
+                hotels: [
+                    { name: 'İsmayıllı Resort', rating: 4.4, price: '₼110', dist: '25 km', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=400' },
+                    { name: 'Basqal Hotel', rating: 4.0, price: '₼70', dist: '20 km', img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=400' }
+                ],
+                restaurants: [
+                    { name: 'Dağ Restoranı', type: 'Milli', rating: 4.5, phone: '+994501201100', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=400' },
+                    { name: 'İsmayıllı Mangal', type: 'Kabab', rating: 4.4, phone: '+994501202211', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=400' }
+                ],
+                activities: [
+                    { name: 'Alpinizm', icon: '🧗', desc: 'Zirvəyə professional qalxış' },
+                    { name: 'Kamp', icon: '⛺', desc: 'Dağda gecələmə' },
+                    { name: 'Trekking', icon: '🥾', desc: 'Çətin marşrutlar' },
+                    { name: 'Foto Safari', icon: '📷', desc: 'Təbiət çəkilişləri' }
+                ],
+                dir: { car: 'Bakıdan İsmayıllı ~180 km, sonra dağ yolu.', bus: 'İsmayıllıdan bələdçi ilə.', tour: 'DağTur ekspedisiya paketləri.' }
+            },
+            kapaz: {
+                name: 'Kəpəz Dağı',
+                badge: 'Göllər Diyarı',
+                alt: '3066 m',
+                location: 'Göygöl rayonu',
+                lat: 40.5167,
+                lng: 46.3667,
+                temp: '-5°C / +22°C',
+                diff: 'Orta',
+                duration: '2-3 gün',
+                season: 'Aprel-Noyabr',
+                desc: 'Kəpəz dağı Göygöl rayonunda yerləşir və Azərbaycanın ən gözəl göl mənzərələrinə malikdir. Göygöl, Maralgöl və digər göllər bu dağın ətəyində yerləşir.',
+                tags: ['💎 Göygöl', '🏞️ Maralgöl', '🥾 Trekking', '🏕️ Kamp', '📸 Mənzərə'],
+                img: 'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=2070',
+                hotels: [
+                    { name: 'Göygöl Resort', rating: 4.6, price: '₼150', dist: '10 km', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=400' },
+                    { name: 'Maralgöl Camp', rating: 4.3, price: '₼80', dist: '5 km', img: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=400' }
+                ],
+                restaurants: [
+                    { name: 'Göygöl Balıq Evi', type: 'Balıq', rating: 4.7, phone: '+994221301100', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=400' },
+                    { name: 'Kəpəz Restoranı', type: 'Milli', rating: 4.5, phone: '+994501302211', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=400' }
+                ],
+                activities: [
+                    { name: 'Göl Turu', icon: '💎', desc: '7 göl marşrutu' },
+                    { name: 'Trekking', icon: '🥾', desc: 'Zirvəyə yürüyüş' },
+                    { name: 'Piknik', icon: '🧺', desc: 'Göl kənarında' },
+                    { name: 'Foto Tur', icon: '📷', desc: 'Mənzərə çəkilişi' }
+                ],
+                dir: { car: 'Bakıdan Göygölə ~400 km, 5 saat.', bus: 'Gəncədən Göygölə minibus.', tour: 'Göygöl tur paketləri.' }
+            },
+            murovdag: {
+                name: 'Murovdağ',
+                badge: 'Kiçik Qafqaz',
+                alt: '3724 m',
+                location: 'Gədəbəy rayonu',
+                lat: 40.4500,
+                lng: 46.8833,
+                temp: '-20°C / +15°C',
+                diff: 'Çətin',
+                duration: '4-6 gün',
+                season: 'İyul-Sentyabr',
+                desc: 'Murovdağ Kiçik Qafqaz silsiləsinin ən hündür nöqtəsidir. Qarlı zirvələri, alp çəmənlikləri və çətin trekking marşrutları ilə tanınır. Təcrübəli dağçılar üçün ideal.',
+                tags: ['🏔️ Ən hündür', '❄️ Qar', '🧗 Alpinizm', '🎒 Ekspedisiya', '⚠️ Professional'],
+                img: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070',
+                hotels: [
+                    { name: 'Gədəbəy Hotel', rating: 4.0, price: '₼70', dist: '30 km', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=400' },
+                    { name: 'Dağ Kamp', rating: 4.2, price: '₼50', dist: '15 km', img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=400' }
+                ],
+                restaurants: [
+                    { name: 'Gədəbəy Evi', type: 'Milli', rating: 4.4, phone: '+994221401100', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=400' },
+                    { name: 'Dağ Çay Evi', type: 'Çay', rating: 4.2, phone: '+994501402211', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=400' }
+                ],
+                activities: [
+                    { name: 'Ekspedisiya', icon: '🎒', desc: 'Zirvə fəthi' },
+                    { name: 'Kamp', icon: '⛺', desc: 'Yüksək dağlarda' },
+                    { name: 'Alp Turu', icon: '🌸', desc: 'Çəmənlik gəzintisi' },
+                    { name: 'Foto', icon: '📷', desc: 'Panoramik çəkilişlər' }
+                ],
+                dir: { car: 'Bakıdan Gədəbəyə ~350 km. Sonra dağ yolu.', bus: 'Gəncədən Gədəbəyə avtobus.', tour: 'Professional ekspedisiya turları.' }
+            },
+            beshbarmag: {
+                name: 'Beşbarmaq',
+                badge: 'Ziyarətgah',
+                alt: '520 m',
+                location: 'Siyəzən rayonu',
+                lat: 40.9611,
+                lng: 49.2333,
+                temp: '+5°C / +35°C',
+                diff: 'Asan',
+                duration: 'Yarım gün',
+                season: 'Bütün il',
+                desc: 'Beşbarmaq dağı Azərbaycanın ən məşhur ziyarət yerlərindən biridir. 5 barmağa bənzəyən qayaları ilə ikonik görünüşə malikdir. Müqəddəs yer kimi ziyarət edilir.',
+                tags: ['🕌 Ziyarət', '🪨 Qaya', '📸 İkonik', '🚗 Asan çatış', '👨‍👩‍👧‍👦 Ailəvi'],
+                img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070',
+                hotels: [
+                    { name: 'Siyəzən Hotel', rating: 4.0, price: '₼60', dist: '10 km', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=400' },
+                    { name: 'Xəzər Resort', rating: 4.3, price: '₼120', dist: '15 km', img: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=400' }
+                ],
+                restaurants: [
+                    { name: 'Beşbarmaq Restoranı', type: 'Milli', rating: 4.5, phone: '+994181501100', img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=400' },
+                    { name: 'Sahil Kafesi', type: 'Fast food', rating: 4.0, phone: '+994501502211', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=400' }
+                ],
+                activities: [
+                    { name: 'Ziyarət', icon: '🕌', desc: 'Müqəddəs yerə ziyarət' },
+                    { name: 'Foto Tur', icon: '📷', desc: 'İkonik görüntülər' },
+                    { name: 'Piknik', icon: '🧺', desc: 'Ətraf ərazidə' },
+                    { name: 'Sahil', icon: '🏖️', desc: 'Xəzər sahili' }
+                ],
+                dir: { car: 'Bakıdan şimala ~90 km, 1.5 saat.', bus: 'Bakıdan Siyəzənə avtobus.', tour: 'Günübirlik turlar.' }
+            }
+        };
+
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('mountain') || 'bazarduzu';
+        const m = data[id] || data.bazarduzu;
+
+        function calcDist(lat1, lng1, lat2, lng2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+            return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+        }
+
+        function load() {
+            document.title = m.name + ' | DağTur';
+            document.getElementById('title').textContent = m.name;
+            document.getElementById('badge').textContent = m.badge;
+            document.getElementById('altitude').textContent = m.alt;
+            document.getElementById('location').textContent = m.location;
+            document.getElementById('heroBg').style.backgroundImage = `url('${m.img}')`;
+            document.getElementById('temp').textContent = m.temp;
+            document.getElementById('diff').textContent = m.diff;
+            document.getElementById('duration').textContent = m.duration;
+            document.getElementById('season').textContent = m.season;
+            document.getElementById('desc').textContent = m.desc;
+            document.getElementById('tags').innerHTML = m.tags.map(t => `<span class="tag">${t}</span>`).join('');
+            
+            document.getElementById('hotels').innerHTML = m.hotels.map(h => `
+                <div class="place-card">
+                    <div class="place-img" style="background-image:url('${h.img}')"></div>
+                    <div class="place-body">
+                        <h4>${h.name}</h4>
+                        <div class="place-meta"><span>⭐ ${h.rating}</span><span>📍 ${h.dist}</span></div>
+                        <div class="place-foot"><span class="price">${h.price}/gecə</span><button class="place-btn">Rezerv</button></div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('restaurants').innerHTML = m.restaurants.map(r => `
+                <div class="place-card">
+                    <div class="place-img" style="background-image:url('${r.img}')"></div>
+                    <div class="place-body">
+                        <h4>${r.name}</h4>
+                        <div class="place-meta"><span>🍽️ ${r.type}</span><span>⭐ ${r.rating}</span></div>
+                        <div class="place-actions">
+                            <a href="tel:${r.phone}" class="place-btn call-btn">📞 Zəng</a>
+                            <button class="place-btn" onclick="openReservation('${r.name}', '${r.phone}')">🍴 Rezerv</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('activities').innerHTML = m.activities.map(a => `
+                <div class="act-card"><span class="act-icon">${a.icon}</span><h4>${a.name}</h4><p>${a.desc}</p></div>
+            `).join('');
+            
+            document.getElementById('dirCar').textContent = m.dir.car;
+            document.getElementById('dirBus').textContent = m.dir.bus;
+            document.getElementById('dirTour').textContent = m.dir.tour;
+            document.getElementById('mapsBtn').href = `https://www.google.com/maps/dir/?api=1&destination=${m.lat},${m.lng}`;
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(p => {
+                    document.getElementById('distance').textContent = calcDist(p.coords.latitude, p.coords.longitude, m.lat, m.lng) + ' km';
+                }, () => {
+                    document.getElementById('distance').textContent = calcDist(40.4093, 49.8671, m.lat, m.lng) + ' km (Bakıdan)';
+                });
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', load);
+
+        // Restaurant Reservation
+        let currentResPhone = '';
+        
+        function openReservation(name, phone) {
+            document.getElementById('resName').textContent = name;
+            document.getElementById('resCallBtn').href = 'tel:' + phone;
+            currentResPhone = phone;
+            
+            // Set min date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('resDate').min = today;
+            document.getElementById('resDate').value = today;
+            
+            document.getElementById('reservationModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeReservation() {
+            document.getElementById('reservationModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        
+        function submitReservation(e) {
+            e.preventDefault();
+            
+            const reservation = {
+                restaurant: document.getElementById('resName').textContent,
+                phone: currentResPhone,
+                guestName: document.getElementById('resGuestName').value,
+                guestPhone: document.getElementById('resGuestPhone').value,
+                date: document.getElementById('resDate').value,
+                time: document.getElementById('resTime').value,
+                guests: document.getElementById('resGuests').value,
+                notes: document.getElementById('resNotes').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            const reservations = JSON.parse(localStorage.getItem('dagtur_restaurant_reservations') || '[]');
+            reservations.push(reservation);
+            localStorage.setItem('dagtur_restaurant_reservations', JSON.stringify(reservations));
+            
+            closeReservation();
+            showResSuccess();
+        }
+        
+        function showResSuccess() {
+            const toast = document.createElement('div');
+            toast.className = 'res-toast';
+            toast.innerHTML = '✓ Rezervasiya qəbul edildi!';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        // Close modal on escape and backdrop click
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeReservation();
+        });
+        document.getElementById('reservationModal')?.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('reservationModal')) closeReservation();
+        });
+    </script>
+</body>
+</html>
